@@ -1,0 +1,15 @@
+{
+  "name": "tactical-match-maker",
+  "version": "1.0.0",
+  "description": "Platforma #1 pentru fotbaliștii amatori din România",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "stripe": "^14.14.0",
+    "dotenv": "^16.4.1"
+  }
+}

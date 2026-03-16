@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="The Tactical Match-Maker — Platforma #1 pentru fotbaliștii amatori din România. Sistem ELO, carduri de jucător dinamice și matchmaking inteligent.">
+  <meta name="theme-color" content="#0a0e17">
+  <title>Tactical Match-Maker ⚽ | Fotbal Amator cu Rating ELO</title>
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar" id="navbar">
+    <div class="navbar-inner">
+      <div class="navbar-brand" onclick="App.navigate('home')">
+        <div class="brand-icon">⚽</div>
+        <span>Tactical<span style="color:var(--green-400);">Match</span></span>
+      </div>
+
+      <button class="mobile-menu-btn" onclick="App.toggleMobileMenu()" aria-label="Menu">☰</button>
+
+      <ul class="navbar-links" id="nav-links">
+        <li><a href="#home">🏠 Acasă</a></li>
+        <li><a href="#matches">⚽ Meciuri</a></li>
+      </ul>
+
+      <div class="navbar-user" id="nav-user-area">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </nav>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- App Content -->
+  <main id="app-content">
+    <!-- Pages rendered here by JS -->
+  </main>
+
+  <!-- Footer -->
+  <footer style="border-top:1px solid var(--border-subtle);padding:2rem;text-align:center;color:var(--text-muted);font-size:0.8rem;position:relative;z-index:1;">
+    <p>⚽ <strong>Tactical Match-Maker</strong> — Fotbal amator la nivel profesionist</p>
+    <p style="margin-top:0.5rem;opacity:0.6;">Made with ❤️ for Romanian amateur football</p>
+  </footer>
+
+  <!-- Scripts (order matters) -->
+  <script src="js/data.js"></script>
+  <script src="js/elo.js"></script>
+  <script src="js/components.js"></script>
+  <script src="js/pages/landing.js"></script>
+  <script src="js/pages/register.js"></script>
+  <script src="js/pages/profile.js"></script>
+  <script src="js/pages/matches.js"></script>
+  <script src="js/pages/rate.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
