@@ -24,8 +24,8 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
-// Seed data on startup
-ServerData.seedIfEmpty();
+// Seed data on startup (disabled — no more demo accounts)
+// ServerData.seedIfEmpty();
 
 // ---- API Routes ----
 
