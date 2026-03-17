@@ -130,10 +130,11 @@ const Components = {
     const statusText = match.status === 'open' ? 'Deschis' : match.status === 'full' ? 'Complet' : 'Finalizat';
     const dateStr = new Date(match.date).toLocaleDateString('ro-RO', { weekday: 'short', day: 'numeric', month: 'short' });
 
-    const avatarHtml = players.slice(0, 5).map(p =>
-      `<div class="mini-avatar" title="${p.name}">${p.photo ? `<img src="${p.photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : (p.avatar || '⚽')}</div>`
-    ).join('');
+    const avatarForPlayer = (p) => p.photo ? `<img src="${p.photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : (p.avatar || '⚽');
 
+    const t1 = (match.team1 || []).map(id => DataStore.getPlayer(id)).filter(Boolean);
+    const t2 = (match.team2 || []).map(id => DataStore.getPlayer(id)).filter(Boolean);
+    const halfMax = Math.floor(match.maxPlayers / 2);
     const remaining = match.maxPlayers - players.length;
 
     return `
@@ -150,15 +151,20 @@ const Components = {
           ${match.ageCategory ? `<div class="match-detail">🎂 ${match.ageCategory === '5-7' ? '5–7 ani 🌟' : '7–12 ani ⚽'}</div>` : ''}
           ${match.fee ? `<div class="match-detail match-fee-badge">💰 ${match.fee} RON</div>` : ''}
         </div>
-        <div class="match-players">
-          <div class="player-avatars">${avatarHtml}</div>
-          <span style="font-size:0.8rem;color:var(--text-secondary)">
-            ${players.length}/${match.maxPlayers} jucători
-            ${remaining > 0 ? `<span style="color:var(--green-400);"> — ${remaining} locuri libere</span>` : ''}
-          </span>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-sm);margin:var(--space-md) 0;">
+          <div style="background:var(--bg-input);border-radius:var(--radius-sm);padding:var(--space-sm);text-align:center;">
+            <div style="font-size:0.75rem;font-weight:600;color:var(--text-muted);margin-bottom:4px;">🔵 Echipa 1 (${t1.length}/${halfMax})</div>
+            <div class="player-avatars" style="justify-content:center;">${t1.map(p => `<div class="mini-avatar" title="${p.name}">${avatarForPlayer(p)}</div>`).join('') || '<span style="font-size:0.7rem;color:var(--text-muted);">—</span>'}</div>
+          </div>
+          <div style="background:var(--bg-input);border-radius:var(--radius-sm);padding:var(--space-sm);text-align:center;">
+            <div style="font-size:0.75rem;font-weight:600;color:var(--text-muted);margin-bottom:4px;">🔴 Echipa 2 (${t2.length}/${halfMax})</div>
+            <div class="player-avatars" style="justify-content:center;">${t2.map(p => `<div class="mini-avatar" title="${p.name}">${avatarForPlayer(p)}</div>`).join('') || '<span style="font-size:0.7rem;color:var(--text-muted);">—</span>'}</div>
+          </div>
         </div>
         <div class="match-footer">
-          <div class="elo-range">ELO: ${match.eloMin} — ${match.eloMax}</div>
+          <div class="elo-range">ELO: ${match.eloMin} — ${match.eloMax}
+            ${remaining > 0 ? `<span style="color:var(--green-400);margin-left:8px;">${remaining} locuri libere</span>` : ''}
+          </div>
           ${match.status === 'open' ? `<button class="btn btn-primary btn-sm" onclick="App.joinMatch('${match.id}')">Intră în Meci</button>` : ''}
           ${match.status === 'completed' ? `<button class="btn btn-secondary btn-sm" onclick="App.navigate('rate', '${match.id}')">Notează Jucătorii</button>` : ''}
         </div>

@@ -132,11 +132,13 @@ app.post('/api/login', async (req, res) => {
 // Create a Stripe Checkout Session
 app.post('/api/create-checkout-session', async (req, res) => {
     try {
-        const { matchId, playerId } = req.body;
+        const { matchId, playerId, team } = req.body;
 
         if (!matchId || !playerId) {
             return res.status(400).json({ error: 'matchId și playerId sunt obligatorii' });
         }
+
+        const selectedTeam = team === 1 ? 'team1' : 'team2';
 
         const match = ServerData.getMatch(matchId);
         if (!match) {
@@ -151,6 +153,13 @@ app.post('/api/create-checkout-session', async (req, res) => {
         // Validations
         if (match.players.includes(playerId)) {
             return res.status(400).json({ error: 'Ești deja înscris în acest meci' });
+        }
+
+        // Check team capacity
+        const teamArr = match[selectedTeam] || [];
+        const halfMax = Math.floor(match.maxPlayers / 2);
+        if (teamArr.length >= halfMax) {
+            return res.status(400).json({ error: `Echipa ${team} este plină! Încearcă cealaltă echipă.` });
         }
 
         if (match.players.length >= match.maxPlayers) {
@@ -171,6 +180,8 @@ app.post('/api/create-checkout-session', async (req, res) => {
         if (fee <= 0) {
             // Free match — just add player directly
             match.players.push(playerId);
+            if (!match[selectedTeam]) match[selectedTeam] = [];
+            match[selectedTeam].push(playerId);
             if (match.players.length >= match.maxPlayers) match.status = 'full';
             ServerData.saveMatch(match);
             ServerData.addPayment({
@@ -201,6 +212,7 @@ app.post('/api/create-checkout-session', async (req, res) => {
             metadata: {
                 matchId,
                 playerId,
+                team: String(team),
             },
         });
 
@@ -236,6 +248,9 @@ app.post('/api/verify-payment', async (req, res) => {
         // Check if already added (idempotent)
         if (!match.players.includes(playerId)) {
             match.players.push(playerId);
+            const teamKey = session.metadata.team === '1' ? 'team1' : 'team2';
+            if (!match[teamKey]) match[teamKey] = [];
+            match[teamKey].push(playerId);
             if (match.players.length >= match.maxPlayers) match.status = 'full';
             ServerData.saveMatch(match);
         }
@@ -281,6 +296,8 @@ app.post('/api/matches', (req, res) => {
             time: time || '20:00',
             maxPlayers: maxPlayers || 10,
             players: [],
+            team1: [],
+            team2: [],
             eloMin: eloMin || 800,
             eloMax: eloMax || 1600,
             fee: fee || 0,

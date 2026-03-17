@@ -148,29 +148,50 @@ const App = {
             return Components.toast(`Acest meci este pentru categoria ${ageName}. Tu ești în altă categorie!`, 'error');
         }
 
-        // Show fee confirmation modal
+        // Show fee confirmation modal with team selection
         const feeAmount = match.fee || 0;
         const dateStr = new Date(match.date).toLocaleDateString('ro-RO', { weekday: 'long', day: 'numeric', month: 'long' });
+        const halfMax = Math.floor(match.maxPlayers / 2);
+        const t1Count = (match.team1 || []).length;
+        const t2Count = (match.team2 || []).length;
+        const t1Players = (match.team1 || []).map(id => DataStore.getPlayer(id)).filter(Boolean);
+        const t2Players = (match.team2 || []).map(id => DataStore.getPlayer(id)).filter(Boolean);
 
-        Components.showModal('Confirmare Înscriere ⚽', `
+        Components.showModal('Confirmă Înscrierea ⚽', `
           <div style="text-align:center;padding:var(--space-md) 0;">
-            <div style="font-size:2.5rem;margin-bottom:var(--space-md);">⚽</div>
             <h3 style="margin:0 0 var(--space-sm) 0;">${match.title}</h3>
             <p style="color:var(--text-secondary);margin-bottom:var(--space-lg);">
               📅 ${dateStr} • 🕐 ${match.time}<br>
               📍 ${match.location}, ${match.city}
             </p>
 
+            <p style="font-weight:600;margin-bottom:var(--space-md);">Alege echipa ta:</p>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md);margin-bottom:var(--space-lg);">
+              <div id="team-btn-1" onclick="App._selectedTeam=1;document.getElementById('team-btn-1').style.borderColor='var(--green-400)';document.getElementById('team-btn-2').style.borderColor='var(--border-subtle)';" 
+                style="padding:var(--space-md);border-radius:var(--radius-md);background:var(--bg-input);border:2px solid var(--green-400);cursor:pointer;transition:all 0.2s;">
+                <div style="font-size:1.5rem;">🔵</div>
+                <div style="font-weight:700;margin:4px 0;">Echipa 1</div>
+                <div style="font-size:0.8rem;color:var(--text-muted);">${t1Count}/${halfMax} jucători</div>
+                ${t1Players.length > 0 ? `<div style="font-size:0.75rem;color:var(--text-secondary);margin-top:4px;">${t1Players.map(p => p.name.split(' ')[0]).join(', ')}</div>` : ''}
+              </div>
+              <div id="team-btn-2" onclick="App._selectedTeam=2;document.getElementById('team-btn-2').style.borderColor='var(--green-400)';document.getElementById('team-btn-1').style.borderColor='var(--border-subtle)';" 
+                style="padding:var(--space-md);border-radius:var(--radius-md);background:var(--bg-input);border:2px solid var(--border-subtle);cursor:pointer;transition:all 0.2s;">
+                <div style="font-size:1.5rem;">🔴</div>
+                <div style="font-weight:700;margin:4px 0;">Echipa 2</div>
+                <div style="font-size:0.8rem;color:var(--text-muted);">${t2Count}/${halfMax} jucători</div>
+                ${t2Players.length > 0 ? `<div style="font-size:0.75rem;color:var(--text-secondary);margin-top:4px;">${t2Players.map(p => p.name.split(' ')[0]).join(', ')}</div>` : ''}
+              </div>
+            </div>
+
             ${feeAmount > 0 ? `
               <div class="fee-confirmation-box">
                 <div class="fee-label">Taxă de Înscriere</div>
                 <div class="fee-amount">${feeAmount} RON</div>
-                <div class="fee-description">Include închirierea terenului și arbitrajul</div>
               </div>
             ` : `
               <div class="fee-confirmation-box fee-free">
                 <div class="fee-amount">GRATUIT 🎉</div>
-                <div class="fee-description">Acest meci nu are taxă de înscriere</div>
               </div>
             `}
 
@@ -182,6 +203,9 @@ const App = {
             </div>
           </div>
         `);
+
+        // Default to team 1
+        this._selectedTeam = 1;
     },
 
     async confirmJoinMatch(matchId) {
@@ -202,7 +226,7 @@ const App = {
             const resp = await fetch('/api/create-checkout-session', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ matchId, playerId: currentUser.id }),
+                body: JSON.stringify({ matchId, playerId: currentUser.id, team: this._selectedTeam || 1 }),
             });
 
             const data = await resp.json();
@@ -213,8 +237,10 @@ const App = {
 
             if (data.free) {
                 // Free match — server already added the player
-                // Update local data too
                 match.players.push(currentUser.id);
+                const teamKey = this._selectedTeam === 1 ? 'team1' : 'team2';
+                if (!match[teamKey]) match[teamKey] = [];
+                match[teamKey].push(currentUser.id);
                 if (match.players.length >= match.maxPlayers) match.status = 'full';
                 DataStore.saveMatch(match);
 
