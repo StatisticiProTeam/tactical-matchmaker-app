@@ -52,15 +52,15 @@ const MatchesPage = {
               <h1>Meciuri Disponibile ⚽</h1>
               <p>Găsește un meci pe nivelul tău sau creează-ți propriul meci</p>
             </div>
-            ${currentUser ? `
+            ${currentUser && currentUser.isAdmin ? `
               <button class="btn btn-primary" onclick="MatchesPage.showCreateMatchModal()">
                 ➕ Creează Meci
               </button>
-            ` : `
+            ` : !currentUser ? `
               <button class="btn btn-primary" onclick="App.navigate('register')">
                 🚀 Înscrie-te pentru a juca
               </button>
-            `}
+            ` : ''}
           </div>
 
           <!-- Tabs -->
@@ -101,7 +101,7 @@ const MatchesPage = {
       '🔍',
       'Niciun meci găsit',
       'Încearcă să schimbi filtrele sau creează propriul meci!',
-      currentUser ? `<button class="btn btn-primary" onclick="MatchesPage.showCreateMatchModal()">➕ Creează un Meci</button>` : ''
+      currentUser && currentUser.isAdmin ? `<button class="btn btn-primary" onclick="MatchesPage.showCreateMatchModal()">➕ Creează un Meci</button>` : ''
     )}
         </div>
       </div>

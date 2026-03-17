@@ -289,6 +289,12 @@ app.post('/api/matches', (req, res) => {
             return res.status(400).json({ error: 'Câmpuri obligatorii lipsă' });
         }
 
+        // Only admin can create matches
+        const creator = ServerData.getPlayer(createdBy);
+        if (!creator || !creator.isAdmin) {
+            return res.status(403).json({ error: 'Doar administratorul poate crea meciuri!' });
+        }
+
         const match = {
             id: 'match_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 5),
             title, city, location,
