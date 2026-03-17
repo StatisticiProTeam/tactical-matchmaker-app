@@ -12,6 +12,7 @@ const RegisterPage = {
         position: '',
         level: '',
         avatar: '',
+        remember: true,
     },
 
     avatarOptions: ['⚡', '🔥', '🎯', '🛡️', '🧤', '💎', '🚀', '🌟', '⭐', '🦁', '🏃', '🧱', '🎖️', '👑', '🦅', '💪'],
@@ -85,7 +86,13 @@ const RegisterPage = {
         </div>
       </div>
 
-      <div style="display:flex;justify-content:flex-end;margin-top:var(--space-xl);">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:var(--space-xl);">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.9rem;color:var(--text-secondary);">
+          <input type="checkbox" id="reg-remember" ${this.state.remember ? 'checked' : ''}
+            onchange="RegisterPage.state.remember = this.checked"
+            style="width:18px;height:18px;accent-color:var(--green-500);cursor:pointer;">
+          Ține-mă minte 🔒
+        </label>
         <button class="btn btn-primary" onclick="RegisterPage.nextStep()">Continuă →</button>
       </div>
     `;
@@ -277,10 +284,10 @@ const RegisterPage = {
 
             // Save locally and login
             DataStore.savePlayer(data);
-            DataStore.setCurrentUser(data.id, true);
+            DataStore.setCurrentUser(data.id, this.state.remember);
 
             // Reset form
-            this.state = { step: 1, name: '', password: '', confirmPassword: '', city: '', position: '', level: '', avatar: '' };
+            this.state = { step: 1, name: '', password: '', confirmPassword: '', city: '', position: '', level: '', avatar: '', remember: true };
 
             Components.toast(`Bine ai venit, ${data.name}! 🎉`, 'success');
             App.navigate('profile', data.id);
