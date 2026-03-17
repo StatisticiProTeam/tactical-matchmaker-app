@@ -161,6 +161,11 @@ app.post('/api/create-checkout-session', async (req, res) => {
             return res.status(400).json({ error: `ELO-ul tău (${player.elo}) nu e în range-ul meciului` });
         }
 
+        if (match.ageCategory && player.ageCategory && match.ageCategory !== player.ageCategory) {
+            const ageName = match.ageCategory === '5-7' ? '5–7 ani' : '7–12 ani';
+            return res.status(400).json({ error: `Acest meci este pentru categoria ${ageName}` });
+        }
+
         const fee = match.fee || 0;
 
         if (fee <= 0) {

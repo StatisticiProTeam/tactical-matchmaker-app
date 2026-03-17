@@ -143,6 +143,11 @@ const App = {
             return Components.toast(`ELO-ul tău (${currentUser.elo}) nu este în range-ul meciului (${match.eloMin}-${match.eloMax})!`, 'error');
         }
 
+        if (match.ageCategory && currentUser.ageCategory && match.ageCategory !== currentUser.ageCategory) {
+            const ageName = match.ageCategory === '5-7' ? '5–7 ani' : '7–12 ani';
+            return Components.toast(`Acest meci este pentru categoria ${ageName}. Tu ești în altă categorie!`, 'error');
+        }
+
         // Show fee confirmation modal
         const feeAmount = match.fee || 0;
         const dateStr = new Date(match.date).toLocaleDateString('ro-RO', { weekday: 'long', day: 'numeric', month: 'long' });
