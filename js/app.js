@@ -101,11 +101,14 @@ const App = {
         if (userArea) {
             if (currentUser) {
                 const tier = ELO.getTier(currentUser.elo);
+                const navAvatar = currentUser.photo
+                    ? `<img src="${currentUser.photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`
+                    : (currentUser.avatar || '⚽');
                 userArea.innerHTML = `
           <span style="font-size:0.8rem;color:var(--text-muted);">${currentUser.elo} ELO</span>
           <div class="user-avatar" onclick="App.navigate('profile', '${currentUser.id}')"
             title="${currentUser.name}" style="background:${tier.color}22;border-color:${tier.color}66;">
-            ${currentUser.avatar || '⚽'}
+            ${navAvatar}
           </div>
           <button class="btn btn-sm btn-secondary" onclick="App.logout()" title="Deconectare">🚪</button>
         `;

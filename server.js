@@ -21,7 +21,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middlewares
-app.use(express.json());
+app.use(express.json({ limit: '2mb' }));
 app.use(express.static(path.join(__dirname)));
 
 // Seed data on startup (disabled — no more demo accounts)
@@ -53,7 +53,7 @@ app.get('/api/players', (req, res) => {
 // Register a new player
 app.post('/api/register', async (req, res) => {
     try {
-        const { name, password, city, ageCategory, position, positionName, level, avatar } = req.body;
+        const { name, password, city, ageCategory, position, positionName, level, photo } = req.body;
 
         if (!name || !password || !city || !position) {
             return res.status(400).json({ error: 'Toate câmpurile sunt obligatorii' });
@@ -84,7 +84,8 @@ app.post('/api/register', async (req, res) => {
             fairPlay: 3.0,
             fitness: 3.0,
             matchesPlayed: 0,
-            avatar: avatar || '⚽',
+            photo: photo || '',
+            avatar: photo ? '' : '⚽',
             passwordHash,
             createdAt: new Date().toISOString(),
         };

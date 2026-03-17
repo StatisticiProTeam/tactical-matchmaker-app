@@ -12,7 +12,7 @@ const RegisterPage = {
         ageCategory: '',
         position: '',
         level: '',
-        avatar: '',
+        photo: '',
         remember: true,
     },
 
@@ -86,14 +86,19 @@ const RegisterPage = {
       </div>
 
       <div class="form-group">
-        <label class="form-label">Alege-ți un avatar</label>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;">
-          ${this.avatarOptions.map(a => `
-            <div onclick="RegisterPage.selectAvatar('${a}')"
-              style="width:48px;height:48px;border-radius:var(--radius-md);background:var(--bg-input);display:flex;align-items:center;justify-content:center;font-size:1.5rem;cursor:pointer;border:2px solid ${this.state.avatar === a ? 'var(--green-400)' : 'transparent'};transition:all 0.2s;"
-              class="avatar-option">${a}</div>
-          `).join('')}
+        <label class="form-label">Poza ta de profil 📷</label>
+        <div onclick="document.getElementById('reg-photo-input').click()"
+          style="width:120px;height:120px;border-radius:50%;background:var(--bg-input);display:flex;align-items:center;justify-content:center;cursor:pointer;border:3px dashed ${this.state.photo ? 'var(--green-400)' : 'var(--border-subtle)'};transition:all 0.3s;overflow:hidden;margin:0 auto;">
+          ${this.state.photo
+            ? `<img src="${this.state.photo}" style="width:100%;height:100%;object-fit:cover;">`
+            : `<div style="text-align:center;color:var(--text-muted);">
+                <div style="font-size:2rem;">📷</div>
+                <div style="font-size:0.7rem;margin-top:4px;">Apasă aici</div>
+              </div>`
+          }
         </div>
+        <input type="file" id="reg-photo-input" accept="image/*" style="display:none;"
+          onchange="RegisterPage.selectPhoto(this)">
       </div>
 
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:var(--space-xl);">
@@ -187,7 +192,8 @@ const RegisterPage = {
             technique: 3.0,
             fairPlay: 3.0,
             fitness: 3.0,
-            avatar: this.state.avatar || '⚽',
+            avatar: this.state.photo ? '' : '⚽',
+            photo: this.state.photo || '',
         };
 
         return `
@@ -228,9 +234,36 @@ const RegisterPage = {
     `;
     },
 
-    selectAvatar(avatar) {
-        this.state.avatar = avatar;
-        App.renderPage();
+    selectPhoto(input) {
+        const file = input.files[0];
+        if (!file) return;
+
+        // Max 500KB
+        if (file.size > 500 * 1024) {
+            Components.toast('Poza e prea mare! Maxim 500KB.', 'error');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            // Resize to 200x200 for storage
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = 200;
+                canvas.height = 200;
+                const ctx = canvas.getContext('2d');
+                // Crop to square from center
+                const size = Math.min(img.width, img.height);
+                const sx = (img.width - size) / 2;
+                const sy = (img.height - size) / 2;
+                ctx.drawImage(img, sx, sy, size, size, 0, 0, 200, 200);
+                RegisterPage.state.photo = canvas.toDataURL('image/jpeg', 0.7);
+                App.renderPage();
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
     },
 
     selectPosition(id, name) {
@@ -252,7 +285,6 @@ const RegisterPage = {
             if (password !== confirmPassword) return Components.toast('Parolele nu coincid!', 'error');
             if (!city) return Components.toast('Alege orașul!', 'error');
             if (!ageCategory) return Components.toast('Alege categoria de vârstă!', 'error');
-            if (!avatar) return Components.toast('Alege un avatar!', 'error');
         }
         if (step === 2 && !position) return Components.toast('Alege o poziție!', 'error');
         if (step === 3 && !level) return Components.toast('Alege nivelul tău!', 'error');
@@ -286,7 +318,7 @@ const RegisterPage = {
                     position,
                     positionName: posNames[position],
                     level,
-                    avatar: avatar || '⚽',
+                    photo: this.state.photo || '',
                 }),
             });
 
@@ -303,7 +335,7 @@ const RegisterPage = {
             DataStore.setCurrentUser(data.id, this.state.remember);
 
             // Reset form
-            this.state = { step: 1, name: '', password: '', confirmPassword: '', city: '', ageCategory: '', position: '', level: '', avatar: '', remember: true };
+            this.state = { step: 1, name: '', password: '', confirmPassword: '', city: '', ageCategory: '', position: '', level: '', photo: '', remember: true };
 
             Components.toast(`Bine ai venit, ${data.name}! 🎉`, 'success');
             App.navigate('profile', data.id);

@@ -4,6 +4,14 @@
 
 const Components = {
 
+  // --- Avatar Helper (photo or emoji) ---
+  avatarHtml(player, size = '3rem') {
+    if (player.photo) {
+      return `<img src="${player.photo}" alt="${player.name}" style="width:${size};height:${size};border-radius:50%;object-fit:cover;">`;
+    }
+    return player.avatar || '⚽';
+  },
+
   // --- Player Card (FIFA-style) ---
   playerCard(player, opts = {}) {
     const tier = ELO.getTier(player.elo);
@@ -16,7 +24,7 @@ const Components = {
         <div class="player-card-inner">
           <div class="card-tier">${tier.name}</div>
           <div class="card-rating">${player.elo}</div>
-          <div class="card-avatar">${player.avatar || '⚽'}</div>
+          <div class="card-avatar">${player.photo ? `<img src="${player.photo}" alt="${player.name}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : (player.avatar || '⚽')}</div>
           <div class="card-name">${player.name}</div>
           <div class="card-position">${player.positionName || player.position}</div>
           <div class="card-city">📍 ${player.city}</div>
@@ -123,7 +131,7 @@ const Components = {
     const dateStr = new Date(match.date).toLocaleDateString('ro-RO', { weekday: 'short', day: 'numeric', month: 'short' });
 
     const avatarHtml = players.slice(0, 5).map(p =>
-      `<div class="mini-avatar" title="${p.name}">${p.avatar || '⚽'}</div>`
+      `<div class="mini-avatar" title="${p.name}">${p.photo ? `<img src="${p.photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : (p.avatar || '⚽')}</div>`
     ).join('');
 
     const remaining = match.maxPlayers - players.length;
