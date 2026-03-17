@@ -147,6 +147,7 @@ const Components = {
           <div class="match-detail">🕐 ${match.time}</div>
           <div class="match-detail">📍 ${match.location}</div>
           <div class="match-detail">🏙️ ${match.city}</div>
+          ${match.ageCategory ? `<div class="match-detail">🎂 ${match.ageCategory === '5-7' ? '5–7 ani 🌟' : '7–12 ani ⚽'}</div>` : ''}
           ${match.fee ? `<div class="match-detail match-fee-badge">💰 ${match.fee} RON</div>` : ''}
         </div>
         <div class="match-players">

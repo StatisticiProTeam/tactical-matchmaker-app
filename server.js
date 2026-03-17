@@ -263,7 +263,7 @@ app.post('/api/verify-payment', async (req, res) => {
 // Create a match (server-side)
 app.post('/api/matches', (req, res) => {
     try {
-        const { title, city, location, date, time, maxPlayers, eloMin, eloMax, fee, createdBy } = req.body;
+        const { title, city, location, date, time, maxPlayers, eloMin, eloMax, fee, ageCategory, createdBy } = req.body;
 
         if (!title || !city || !location || !date || !createdBy) {
             return res.status(400).json({ error: 'Câmpuri obligatorii lipsă' });
@@ -279,6 +279,7 @@ app.post('/api/matches', (req, res) => {
             eloMin: eloMin || 800,
             eloMax: eloMax || 1600,
             fee: fee || 0,
+            ageCategory: ageCategory || '7-12',
             status: 'open',
             createdBy,
         };

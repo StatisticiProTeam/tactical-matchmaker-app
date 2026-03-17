@@ -5,6 +5,7 @@
 const MatchesPage = {
   state: {
     cityFilter: '',
+    ageFilter: '',
     eloMax: 2000,
     tab: 'open', // 'open' | 'my' | 'completed'
   },
@@ -30,6 +31,11 @@ const MatchesPage = {
     // Filter by ELO
     if (this.state.eloMax < 2000) {
       allMatches = allMatches.filter(m => m.eloMin <= this.state.eloMax);
+    }
+
+    // Filter by age category
+    if (this.state.ageFilter) {
+      allMatches = allMatches.filter(m => m.ageCategory === this.state.ageFilter);
     }
 
     // Sort by date
@@ -72,6 +78,13 @@ const MatchesPage = {
                 ${cities.map(c => `<option value="${c}" ${this.state.cityFilter === c ? 'selected' : ''}>${c}</option>`).join('')}
               </select>
             </div>
+            <div>
+              <select class="form-select" style="width:auto;min-width:160px;" onchange="MatchesPage.filterAge(this.value)">
+                <option value="">🎂 Toate vârstele</option>
+                <option value="5-7" ${this.state.ageFilter === '5-7' ? 'selected' : ''}>5 – 7 ani 🌟</option>
+                <option value="7-12" ${this.state.ageFilter === '7-12' ? 'selected' : ''}>7 – 12 ani ⚽</option>
+              </select>
+            </div>
             <div style="display:flex;align-items:center;gap:var(--space-sm);">
               <span style="font-size:0.85rem;color:var(--text-muted);white-space:nowrap;">ELO max: <strong style="color:var(--green-400);">${this.state.eloMax}</strong></span>
               <input type="range" class="range-slider" min="500" max="2000" step="50" value="${this.state.eloMax}"
@@ -107,6 +120,11 @@ const MatchesPage = {
 
   filterElo(val) {
     this.state.eloMax = parseInt(val);
+    App.renderPage();
+  },
+
+  filterAge(val) {
+    this.state.ageFilter = val;
     App.renderPage();
   },
 
@@ -166,6 +184,13 @@ const MatchesPage = {
         <input class="form-input" type="number" id="new-match-fee" value="30" min="0" step="5" placeholder="ex: 30">
         <span style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;display:block;">Costul per jucător pentru teren + arbitru</span>
       </div>
+      <div class="form-group">
+        <label class="form-label">🎂 Categorie de Vârstă</label>
+        <select class="form-select" id="new-match-age">
+          <option value="5-7">5 – 7 ani 🌟</option>
+          <option value="7-12" selected>7 – 12 ani ⚽</option>
+        </select>
+      </div>
       <div style="display:flex;justify-content:flex-end;gap:var(--space-md);margin-top:var(--space-lg);">
         <button class="btn btn-secondary" onclick="Components.closeModal()">Anulează</button>
         <button class="btn btn-primary" onclick="MatchesPage.createMatch()">✅ Creează Meciul</button>
@@ -191,6 +216,7 @@ const MatchesPage = {
     const eloMin = parseInt(document.getElementById('new-match-elomin')?.value) || 800;
     const eloMax = parseInt(document.getElementById('new-match-elomax')?.value) || 1600;
     const fee = parseInt(document.getElementById('new-match-fee')?.value) || 0;
+    const ageCategory = document.getElementById('new-match-age')?.value || '7-12';
 
     if (!title || !city || !location || !date) {
       return Components.toast('Completează toate câmpurile!', 'error');
@@ -200,7 +226,7 @@ const MatchesPage = {
       const resp = await fetch('/api/matches', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, city, location, date, time, maxPlayers, eloMin, eloMax, fee, createdBy: currentUser.id }),
+        body: JSON.stringify({ title, city, location, date, time, maxPlayers, eloMin, eloMax, fee, ageCategory, createdBy: currentUser.id }),
       });
 
       const match = await resp.json();
