@@ -9,6 +9,7 @@ const RegisterPage = {
         password: '',
         confirmPassword: '',
         city: '',
+        ageCategory: '',
         position: '',
         level: '',
         avatar: '',
@@ -72,6 +73,15 @@ const RegisterPage = {
           ${['București', 'Cluj-Napoca', 'Timișoara', 'Iași', 'Brașov', 'Constanța', 'Sibiu', 'Oradea', 'Craiova', 'Galați'].map(c =>
             `<option value="${c}" ${this.state.city === c ? 'selected' : ''}>${c}</option>`
         ).join('')}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Categoria de vârstă 🎂</label>
+        <select class="form-select" id="reg-age" onchange="RegisterPage.state.ageCategory = this.value">
+          <option value="">— Alege categoria —</option>
+          <option value="5-7" ${this.state.ageCategory === '5-7' ? 'selected' : ''}>5 – 7 ani 🌟</option>
+          <option value="7-12" ${this.state.ageCategory === '7-12' ? 'selected' : ''}>7 – 12 ani ⚽</option>
         </select>
       </div>
 
@@ -201,6 +211,10 @@ const RegisterPage = {
           <span style="color:var(--text-muted);">Poziție</span>
           <span>${posNames[this.state.position] || '—'}</span>
         </div>
+        <div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:6px;">
+          <span style="color:var(--text-muted);">Categorie vârstă</span>
+          <span>${this.state.ageCategory === '5-7' ? '5 – 7 ani 🌟' : '7 – 12 ani ⚽'}</span>
+        </div>
         <div style="display:flex;justify-content:space-between;font-size:0.85rem;">
           <span style="color:var(--text-muted);">ELO Inițial</span>
           <span style="color:var(--green-400);font-weight:700;">${elo} (${tier.name} ${tier.icon})</span>
@@ -231,12 +245,13 @@ const RegisterPage = {
     },
 
     nextStep() {
-        const { step, name, city, position, level, avatar, password, confirmPassword } = this.state;
+        const { step, name, city, position, level, avatar, password, confirmPassword, ageCategory } = this.state;
         if (step === 1) {
             if (!name.trim()) return Components.toast('Introdu-ți numele!', 'error');
             if (!password || password.length < 4) return Components.toast('Parola trebuie să aibă minim 4 caractere!', 'error');
             if (password !== confirmPassword) return Components.toast('Parolele nu coincid!', 'error');
             if (!city) return Components.toast('Alege orașul!', 'error');
+            if (!ageCategory) return Components.toast('Alege categoria de vârstă!', 'error');
             if (!avatar) return Components.toast('Alege un avatar!', 'error');
         }
         if (step === 2 && !position) return Components.toast('Alege o poziție!', 'error');
@@ -267,6 +282,7 @@ const RegisterPage = {
                     name: name.trim(),
                     password,
                     city,
+                    ageCategory: this.state.ageCategory,
                     position,
                     positionName: posNames[position],
                     level,
@@ -287,7 +303,7 @@ const RegisterPage = {
             DataStore.setCurrentUser(data.id, this.state.remember);
 
             // Reset form
-            this.state = { step: 1, name: '', password: '', confirmPassword: '', city: '', position: '', level: '', avatar: '', remember: true };
+            this.state = { step: 1, name: '', password: '', confirmPassword: '', city: '', ageCategory: '', position: '', level: '', avatar: '', remember: true };
 
             Components.toast(`Bine ai venit, ${data.name}! 🎉`, 'success');
             App.navigate('profile', data.id);

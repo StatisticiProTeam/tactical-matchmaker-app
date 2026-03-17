@@ -53,7 +53,7 @@ app.get('/api/players', (req, res) => {
 // Register a new player
 app.post('/api/register', async (req, res) => {
     try {
-        const { name, password, city, position, positionName, level, avatar } = req.body;
+        const { name, password, city, ageCategory, position, positionName, level, avatar } = req.body;
 
         if (!name || !password || !city || !position) {
             return res.status(400).json({ error: 'Toate câmpurile sunt obligatorii' });
@@ -76,6 +76,7 @@ app.post('/api/register', async (req, res) => {
             id: 'player_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 5),
             name: name.trim(),
             city,
+            ageCategory: ageCategory || '',
             position,
             positionName: positionName || position,
             elo: eloMap[level] || 1100,
