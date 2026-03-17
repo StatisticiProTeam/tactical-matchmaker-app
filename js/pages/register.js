@@ -277,7 +277,7 @@ const RegisterPage = {
 
             // Save locally and login
             DataStore.savePlayer(data);
-            DataStore.setCurrentUser(data.id);
+            DataStore.setCurrentUser(data.id, true);
 
             // Reset form
             this.state = { step: 1, name: '', password: '', confirmPassword: '', city: '', position: '', level: '', avatar: '' };

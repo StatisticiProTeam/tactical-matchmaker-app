@@ -70,16 +70,27 @@ const DataStore = {
 
   // --- Current User ---
   getCurrentUser() {
-    const id = this._getObj(this.KEYS.CURRENT_USER);
+    // Check localStorage first (remember me), then sessionStorage (session only)
+    let id = this._getObj(this.KEYS.CURRENT_USER);
+    if (!id) {
+      try { id = JSON.parse(sessionStorage.getItem(this.KEYS.CURRENT_USER)) || null; } catch { id = null; }
+    }
     return id ? this.getPlayer(id) : null;
   },
 
-  setCurrentUser(id) {
-    this._setObj(this.KEYS.CURRENT_USER, id);
+  setCurrentUser(id, remember = false) {
+    if (remember) {
+      // Save in localStorage — persists forever
+      this._setObj(this.KEYS.CURRENT_USER, id);
+    } else {
+      // Save in sessionStorage — clears when browser closes
+      sessionStorage.setItem(this.KEYS.CURRENT_USER, JSON.stringify(id));
+    }
   },
 
   logout() {
     localStorage.removeItem(this.KEYS.CURRENT_USER);
+    sessionStorage.removeItem(this.KEYS.CURRENT_USER);
   },
 
   // --- Matches ---

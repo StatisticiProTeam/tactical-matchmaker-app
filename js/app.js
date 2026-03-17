@@ -240,9 +240,15 @@ const App = {
         <input class="form-input" type="password" id="login-password" placeholder="Introdu parola" autocomplete="current-password">
       </div>
       <div id="login-error" style="color:var(--red-400);font-size:0.85rem;margin-bottom:var(--space-md);display:none;"></div>
-      <div style="display:flex;gap:var(--space-md);justify-content:flex-end;margin-top:var(--space-lg);">
-        <button class="btn btn-secondary" onclick="Components.closeModal()">Anulează</button>
-        <button class="btn btn-primary" id="login-btn" onclick="App.login()">🔑 Intră în Cont</button>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:var(--space-lg);">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.9rem;color:var(--text-secondary);">
+          <input type="checkbox" id="login-remember" checked style="width:18px;height:18px;accent-color:var(--green-500);cursor:pointer;">
+          Ține-mă minte 🔒
+        </label>
+        <div style="display:flex;gap:var(--space-md);">
+          <button class="btn btn-secondary" onclick="Components.closeModal()">Anulează</button>
+          <button class="btn btn-primary" id="login-btn" onclick="App.login()">🔑 Intră în Cont</button>
+        </div>
       </div>
     `);
         // Focus name input
@@ -289,8 +295,9 @@ const App = {
             }
 
             // Success — save player locally and set as current user
+            const remember = document.getElementById('login-remember')?.checked || false;
             DataStore.savePlayer(data);
-            DataStore.setCurrentUser(data.id);
+            DataStore.setCurrentUser(data.id, remember);
             Components.closeModal();
             Components.toast(`Bine ai revenit, ${data.name}! 👋`, 'success');
             this.renderPage();
