@@ -229,40 +229,76 @@ const App = {
     },
 
     showLoginModal() {
-        const players = DataStore.getPlayers();
-
         Components.showModal('Intră în Cont 🔑', `
-      <p style="color:var(--text-secondary);margin-bottom:var(--space-lg);">Selectează profilul tău din lista de jucători:</p>
-      <div style="display:flex;flex-direction:column;gap:var(--space-sm);max-height:400px;overflow-y:auto;">
-        ${players.map(p => {
-            const tier = ELO.getTier(p.elo);
-            return `
-            <div onclick="App.loginAs('${p.id}')"
-              style="display:flex;align-items:center;gap:var(--space-md);padding:var(--space-md);border-radius:var(--radius-md);background:var(--bg-input);cursor:pointer;border:1px solid var(--border-subtle);transition:all 0.2s;"
-              onmouseover="this.style.borderColor='var(--green-400)'"
-              onmouseout="this.style.borderColor='var(--border-subtle)'">
-              <div style="font-size:1.5rem;">${p.avatar || '⚽'}</div>
-              <div style="flex:1;">
-                <div style="font-weight:600;">${p.name}</div>
-                <div style="font-size:0.75rem;color:var(--text-muted);">${p.positionName || p.position} • ${p.city}</div>
-              </div>
-              <div style="text-align:right;">
-                <div style="font-weight:700;color:${tier.color};">${p.elo}</div>
-                <div style="font-size:0.7rem;color:var(--text-muted);">${tier.icon} ${tier.name}</div>
-              </div>
-            </div>
-          `;
-        }).join('')}
+      <p style="color:var(--text-secondary);margin-bottom:var(--space-lg);">Introdu numele și parola ta:</p>
+      <div class="form-group">
+        <label class="form-label">Numele tău</label>
+        <input class="form-input" type="text" id="login-name" placeholder="ex: Andrei Popescu" autocomplete="name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Parola</label>
+        <input class="form-input" type="password" id="login-password" placeholder="Introdu parola" autocomplete="current-password">
+      </div>
+      <div id="login-error" style="color:var(--red-400);font-size:0.85rem;margin-bottom:var(--space-md);display:none;"></div>
+      <div style="display:flex;gap:var(--space-md);justify-content:flex-end;margin-top:var(--space-lg);">
+        <button class="btn btn-secondary" onclick="Components.closeModal()">Anulează</button>
+        <button class="btn btn-primary" id="login-btn" onclick="App.login()">🔑 Intră în Cont</button>
       </div>
     `);
+        // Focus name input
+        setTimeout(() => document.getElementById('login-name')?.focus(), 100);
+        // Enter key support
+        setTimeout(() => {
+            const pwInput = document.getElementById('login-password');
+            if (pwInput) pwInput.addEventListener('keydown', e => { if (e.key === 'Enter') App.login(); });
+        }, 100);
     },
 
-    loginAs(playerId) {
-        DataStore.setCurrentUser(playerId);
-        const player = DataStore.getPlayer(playerId);
-        Components.closeModal();
-        Components.toast(`Bine ai revenit, ${player?.name}! 👋`, 'success');
-        this.renderPage();
+    async login() {
+        const nameEl = document.getElementById('login-name');
+        const passEl = document.getElementById('login-password');
+        const errEl = document.getElementById('login-error');
+        const btn = document.getElementById('login-btn');
+
+        const name = nameEl?.value?.trim();
+        const password = passEl?.value;
+
+        if (!name || !password) {
+            errEl.textContent = 'Introdu numele și parola!';
+            errEl.style.display = 'block';
+            return;
+        }
+
+        // Loading state
+        if (btn) { btn.disabled = true; btn.textContent = '⏳ Se verifică...'; }
+
+        try {
+            const resp = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, password }),
+            });
+
+            const data = await resp.json();
+
+            if (!resp.ok) {
+                errEl.textContent = data.error || 'Eroare la autentificare';
+                errEl.style.display = 'block';
+                if (btn) { btn.disabled = false; btn.textContent = '🔑 Intră în Cont'; }
+                return;
+            }
+
+            // Success — save player locally and set as current user
+            DataStore.savePlayer(data);
+            DataStore.setCurrentUser(data.id);
+            Components.closeModal();
+            Components.toast(`Bine ai revenit, ${data.name}! 👋`, 'success');
+            this.renderPage();
+        } catch (err) {
+            errEl.textContent = 'Eroare de conexiune. Încearcă din nou.';
+            errEl.style.display = 'block';
+            if (btn) { btn.disabled = false; btn.textContent = '🔑 Intră în Cont'; }
+        }
     },
 
     logout() {

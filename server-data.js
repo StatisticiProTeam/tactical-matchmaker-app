@@ -4,6 +4,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const bcrypt = require('bcryptjs');
 
 const DATA_DIR = path.join(__dirname, 'data');
 const MATCHES_FILE = path.join(DATA_DIR, 'matches.json');
@@ -52,10 +53,12 @@ function seedIfEmpty() {
         { name: 'Adrian Moldovan', city: cities[5], position: 'DEF', elo: 1100, technique: 3.4, fairPlay: 4.8, fitness: 3.7, matchesPlayed: 19, avatar: '🦁' },
     ];
 
+    const defaultHash = bcrypt.hashSync('parola123', 10);
     const players = seedPlayers.map((p, i) => ({
         id: `seed_${i}`,
         ...p,
         positionName: positionNames[p.position],
+        passwordHash: defaultHash,
         createdAt: new Date(Date.now() - Math.random() * 90 * 24 * 60 * 60 * 1000).toISOString(),
     }));
 
@@ -108,6 +111,11 @@ function seedIfEmpty() {
 const ServerData = {
     getPlayers() { return readJSON(PLAYERS_FILE); },
     getPlayer(id) { return this.getPlayers().find(p => p.id === id) || null; },
+    getPlayerByName(name) {
+        return this.getPlayers().find(p =>
+            p.name.toLowerCase().trim() === name.toLowerCase().trim()
+        ) || null;
+    },
     savePlayer(player) {
         const players = this.getPlayers();
         const idx = players.findIndex(p => p.id === player.id);

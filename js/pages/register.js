@@ -6,6 +6,8 @@ const RegisterPage = {
     state: {
         step: 1,
         name: '',
+        password: '',
+        confirmPassword: '',
         city: '',
         position: '',
         level: '',
@@ -47,6 +49,19 @@ const RegisterPage = {
         <label class="form-label">Numele tău complet</label>
         <input class="form-input" type="text" id="reg-name" placeholder="ex: Andrei Popescu"
           value="${this.state.name}" oninput="RegisterPage.state.name = this.value">
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md);">
+        <div class="form-group">
+          <label class="form-label">Parola 🔒</label>
+          <input class="form-input" type="password" id="reg-password" placeholder="Minim 4 caractere"
+            value="${this.state.password}" oninput="RegisterPage.state.password = this.value">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirmă Parola</label>
+          <input class="form-input" type="password" id="reg-confirm" placeholder="Repetă parola"
+            value="${this.state.confirmPassword}" oninput="RegisterPage.state.confirmPassword = this.value">
+        </div>
       </div>
 
       <div class="form-group">
@@ -209,9 +224,11 @@ const RegisterPage = {
     },
 
     nextStep() {
-        const { step, name, city, position, level, avatar } = this.state;
+        const { step, name, city, position, level, avatar, password, confirmPassword } = this.state;
         if (step === 1) {
             if (!name.trim()) return Components.toast('Introdu-ți numele!', 'error');
+            if (!password || password.length < 4) return Components.toast('Parola trebuie să aibă minim 4 caractere!', 'error');
+            if (password !== confirmPassword) return Components.toast('Parolele nu coincid!', 'error');
             if (!city) return Components.toast('Alege orașul!', 'error');
             if (!avatar) return Components.toast('Alege un avatar!', 'error');
         }
@@ -227,32 +244,49 @@ const RegisterPage = {
         App.renderPage();
     },
 
-    submit() {
-        const { name, city, position, level, avatar } = this.state;
+    async submit() {
+        const { name, password, city, position, level, avatar } = this.state;
         const posNames = { GK: 'Portar', DEF: 'Fundaș', MID: 'Mijlocaș', ATK: 'Atacant' };
 
-        const player = {
-            id: DataStore.generateId(),
-            name: name.trim(),
-            city,
-            position,
-            positionName: posNames[position],
-            elo: ELO.getInitialElo(level),
-            technique: 3.0,
-            fairPlay: 3.0,
-            fitness: 3.0,
-            matchesPlayed: 0,
-            avatar: avatar || '⚽',
-            createdAt: new Date().toISOString(),
-        };
+        // Disable button
+        const btn = document.querySelector('.btn-primary.btn-lg');
+        if (btn) { btn.disabled = true; btn.textContent = '⏳ Se creează contul...'; }
 
-        DataStore.savePlayer(player);
-        DataStore.setCurrentUser(player.id);
+        try {
+            const resp = await fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: name.trim(),
+                    password,
+                    city,
+                    position,
+                    positionName: posNames[position],
+                    level,
+                    avatar: avatar || '⚽',
+                }),
+            });
 
-        // Reset form
-        this.state = { step: 1, name: '', city: '', position: '', level: '', avatar: '' };
+            const data = await resp.json();
 
-        Components.toast(`Bine ai venit, ${player.name}! 🎉`, 'success');
-        App.navigate('profile', player.id);
+            if (!resp.ok) {
+                Components.toast(data.error || 'Eroare la înregistrare', 'error');
+                if (btn) { btn.disabled = false; btn.textContent = '✅ Finalizează Înscrierea'; }
+                return;
+            }
+
+            // Save locally and login
+            DataStore.savePlayer(data);
+            DataStore.setCurrentUser(data.id);
+
+            // Reset form
+            this.state = { step: 1, name: '', password: '', confirmPassword: '', city: '', position: '', level: '', avatar: '' };
+
+            Components.toast(`Bine ai venit, ${data.name}! 🎉`, 'success');
+            App.navigate('profile', data.id);
+        } catch (err) {
+            Components.toast('Eroare de conexiune. Încearcă din nou.', 'error');
+            if (btn) { btn.disabled = false; btn.textContent = '✅ Finalizează Înscrierea'; }
+        }
     },
 };

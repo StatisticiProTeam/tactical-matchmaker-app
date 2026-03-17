@@ -5,6 +5,7 @@
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
+const bcrypt = require('bcryptjs');
 const ServerData = require('./server-data');
 
 // Validate Stripe key exists
@@ -38,9 +39,92 @@ app.get('/api/matches', (req, res) => {
     res.json(ServerData.getMatches());
 });
 
-// Get all players
+// Get all players (strip passwords!)
 app.get('/api/players', (req, res) => {
-    res.json(ServerData.getPlayers());
+    const players = ServerData.getPlayers().map(p => {
+        const { passwordHash, ...safe } = p;
+        return safe;
+    });
+    res.json(players);
+});
+
+// ---- Auth Routes ----
+
+// Register a new player
+app.post('/api/register', async (req, res) => {
+    try {
+        const { name, password, city, position, positionName, level, avatar } = req.body;
+
+        if (!name || !password || !city || !position) {
+            return res.status(400).json({ error: 'Toate câmpurile sunt obligatorii' });
+        }
+
+        if (password.length < 4) {
+            return res.status(400).json({ error: 'Parola trebuie să aibă minim 4 caractere' });
+        }
+
+        // Check if name already taken
+        const existing = ServerData.getPlayerByName(name);
+        if (existing) {
+            return res.status(400).json({ error: 'Un jucător cu acest nume există deja!' });
+        }
+
+        const eloMap = { beginner: 800, intermediate: 1100, advanced: 1300, expert: 1500 };
+        const passwordHash = await bcrypt.hash(password, 10);
+
+        const player = {
+            id: 'player_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 5),
+            name: name.trim(),
+            city,
+            position,
+            positionName: positionName || position,
+            elo: eloMap[level] || 1100,
+            technique: 3.0,
+            fairPlay: 3.0,
+            fitness: 3.0,
+            matchesPlayed: 0,
+            avatar: avatar || '⚽',
+            passwordHash,
+            createdAt: new Date().toISOString(),
+        };
+
+        ServerData.savePlayer(player);
+
+        // Return player without password
+        const { passwordHash: _, ...safePlayer } = player;
+        res.json(safePlayer);
+    } catch (err) {
+        console.error('Register error:', err.message);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Login
+app.post('/api/login', async (req, res) => {
+    try {
+        const { name, password } = req.body;
+
+        if (!name || !password) {
+            return res.status(400).json({ error: 'Introdu numele și parola' });
+        }
+
+        const player = ServerData.getPlayerByName(name);
+        if (!player) {
+            return res.status(401).json({ error: 'Jucătorul nu a fost găsit' });
+        }
+
+        const valid = await bcrypt.compare(password, player.passwordHash);
+        if (!valid) {
+            return res.status(401).json({ error: 'Parola este incorectă' });
+        }
+
+        // Return player without password
+        const { passwordHash, ...safePlayer } = player;
+        res.json(safePlayer);
+    } catch (err) {
+        console.error('Login error:', err.message);
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // Create a Stripe Checkout Session
