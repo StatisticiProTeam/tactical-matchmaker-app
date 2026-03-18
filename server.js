@@ -28,6 +28,17 @@ app.use(express.static(path.join(__dirname)));
 // Seed data on startup (disabled — no more demo accounts)
 // ServerData.seedIfEmpty();
 
+// Auto-admin: ensure Eric Danila is admin on every startup
+(() => {
+    const players = ServerData.getPlayers();
+    const eric = players.find(p => p.name === 'Eric Danila');
+    if (eric && !eric.isAdmin) {
+        eric.isAdmin = true;
+        ServerData.savePlayer(eric);
+        console.log('   ✅ Eric Danila setat ca admin');
+    }
+})();
+
 // ---- API Routes ----
 
 // Get public Stripe key (for frontend)
