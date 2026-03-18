@@ -127,7 +127,7 @@ const Components = {
   matchCard(match) {
     const players = (match.players || []).map(id => DataStore.getPlayer(id)).filter(Boolean);
     const statusClass = match.status === 'open' ? 'badge-open' : match.status === 'full' ? 'badge-full' : 'badge-completed';
-    const statusText = match.status === 'open' ? 'Deschis' : match.status === 'full' ? 'Complet' : 'Finalizat';
+    const statusText = match.status === 'open' ? 'Viitor' : match.status === 'full' ? 'Complet' : 'Finalizat';
     const dateStr = new Date(match.date).toLocaleDateString('ro-RO', { weekday: 'short', day: 'numeric', month: 'short' });
 
     const avatarForPlayer = (p) => p.photo ? `<img src="${p.photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : (p.avatar || '⚽');

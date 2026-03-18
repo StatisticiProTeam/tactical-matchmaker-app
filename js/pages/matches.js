@@ -65,7 +65,7 @@ const MatchesPage = {
 
           <!-- Tabs -->
           <div class="tabs animate-in animate-delay-1">
-            <button class="tab-btn ${this.state.tab === 'open' ? 'active' : ''}" onclick="MatchesPage.setTab('open')">🟢 Deschise</button>
+            <button class="tab-btn ${this.state.tab === 'open' ? 'active' : ''}" onclick="MatchesPage.setTab('open')">📋 Viitoare</button>
             ${currentUser ? `<button class="tab-btn ${this.state.tab === 'my' ? 'active' : ''}" onclick="MatchesPage.setTab('my')">👤 Meciurile Mele</button>` : ''}
             <button class="tab-btn ${this.state.tab === 'completed' ? 'active' : ''}" onclick="MatchesPage.setTab('completed')">✅ Finalizate</button>
           </div>

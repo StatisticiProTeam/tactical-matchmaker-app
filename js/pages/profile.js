@@ -78,7 +78,7 @@ const ProfilePage = {
                 ${matches.slice(0, 10).map(m => {
             const dateStr = new Date(m.date).toLocaleDateString('ro-RO', { day: 'numeric', month: 'short', year: 'numeric' });
             const statusClass = m.status === 'completed' ? 'badge-completed' : m.status === 'open' ? 'badge-open' : 'badge-full';
-            const statusText = m.status === 'completed' ? 'Finalizat' : m.status === 'open' ? 'Deschis' : 'Complet';
+            const statusText = m.status === 'completed' ? 'Finalizat' : m.status === 'open' ? 'Viitor' : 'Complet';
             return `
                     <div class="history-item" onclick="App.navigate('matches')">
                       <div>
