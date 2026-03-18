@@ -25,43 +25,44 @@ const ProfilePage = {
       <div class="page-content">
         <div class="container">
           <!-- Profile Header -->
-          <div class="profile-header animate-in">
-            <div style="flex-shrink:0;">
+          <div class="animate-in" style="text-align:center;">
+            <div style="display:flex;justify-content:center;margin-bottom:var(--space-lg);">
               ${Components.playerCard(player)}
             </div>
-            <div style="flex:1;padding-top:var(--space-md);">
-              <div style="display:flex;align-items:center;gap:var(--space-md);margin-bottom:var(--space-sm);">
-                <h1 style="margin:0;">${player.name}</h1>
-                ${isOwn ? '<span style="font-size:0.75rem;padding:4px 10px;border-radius:var(--radius-full);background:rgba(34,197,94,0.15);color:var(--green-400);border:1px solid rgba(34,197,94,0.3);">Profilul Tău</span>' : ''}
-                ${isOwn ? `<button class="btn btn-sm btn-secondary" onclick="ProfilePage.showEditModal('${player.id}')" style="margin-left:auto;">✏️ Editează Contul</button>` : ''}
-              </div>
-              <p style="font-size:1rem;margin-bottom:var(--space-lg);">
-                ${player.positionName} • 📍 ${player.city} • ${tier.icon} ${tier.name}
-              </p>
 
-              <!-- Stats Cards -->
-              <div class="profile-stats-grid">
-                <div class="stat-card">
-                  <div class="stat-value">${player.elo}</div>
-                  <div class="stat-label">Rating OVR</div>
-                </div>
-                <div class="stat-card">
-                  <div class="stat-value">${player.matchesPlayed}</div>
-                  <div class="stat-label">Meciuri Jucate</div>
-                </div>
-                <div class="stat-card">
-                  <div class="stat-value" style="color:var(--gold-400);">${ratings.length}</div>
-                  <div class="stat-label">Evaluări Primite</div>
-                </div>
-              </div>
+            ${isOwn ? `<div style="display:flex;gap:var(--space-sm);justify-content:center;margin-bottom:var(--space-lg);flex-wrap:wrap;">
+              <span style="font-size:0.75rem;padding:4px 12px;border-radius:var(--radius-full);background:rgba(34,197,94,0.15);color:var(--green-400);border:1px solid rgba(34,197,94,0.3);">Profilul Tău</span>
+              <button class="btn btn-sm btn-secondary" onclick="ProfilePage.showEditModal('${player.id}')">✏️ Editează Contul</button>
+            </div>` : ''}
 
-              <!-- Radar Chart -->
-              <div style="margin-top:var(--space-xl);display:flex;align-items:center;gap:var(--space-2xl);flex-wrap:wrap;">
+            <p style="font-size:0.9rem;color:var(--text-secondary);margin-bottom:var(--space-lg);">
+              ${player.positionName} • 📍 ${player.city} • ${tier.icon} ${tier.name}
+            </p>
+
+            <!-- Stats Cards -->
+            <div class="profile-stats-grid" style="margin-bottom:var(--space-xl);">
+              <div class="stat-card">
+                <div class="stat-value">${player.elo}</div>
+                <div class="stat-label">Rating OVR</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value">${player.matchesPlayed}</div>
+                <div class="stat-label">Meciuri Jucate</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" style="color:var(--gold-400);">${ratings.length}</div>
+                <div class="stat-label">Evaluări Primite</div>
+              </div>
+            </div>
+
+            <!-- Detailed Stats -->
+            <div style="text-align:left;">
+              <h4 style="margin-bottom:var(--space-md);color:var(--text-secondary);">Statistici Detaliate</h4>
+              <div style="display:flex;align-items:center;gap:var(--space-xl);flex-wrap:wrap;justify-content:center;">
                 <div>
-                  <h4 style="margin-bottom:var(--space-md);color:var(--text-secondary);">Statistici Detaliate</h4>
-                  ${Components.radarChart(player.technique || 3, player.fairPlay || 3, player.fitness || 3, 200)}
+                  ${Components.radarChart(player.technique || 3, player.fairPlay || 3, player.fitness || 3, 180)}
                 </div>
-                <div style="display:flex;flex-direction:column;gap:var(--space-md);">
+                <div style="display:flex;flex-direction:column;gap:var(--space-md);flex:1;min-width:200px;">
                   ${this.statBar('⚡ Tehnică', player.technique || 3, '#22c55e')}
                   ${this.statBar('🤝 Fair-Play', player.fairPlay || 3, '#3b82f6')}
                   ${this.statBar('🏃 Condiție Fizică', player.fitness || 3, '#f59e0b')}

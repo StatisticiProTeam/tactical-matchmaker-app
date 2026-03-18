@@ -1617,8 +1617,8 @@ a:hover { color: var(--green-500); }
 
   /* Player card */
   .player-card {
-    transform: scale(0.85);
-    transform-origin: top left;
+    transform: none;
+    margin: 0 auto;
   }
 
   /* Landing hero */
