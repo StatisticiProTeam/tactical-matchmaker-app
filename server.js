@@ -7,6 +7,7 @@ const express = require('express');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 const ServerData = require('./server-data');
+const EmailService = require('./email');
 
 // Validate Stripe key exists
 if (!process.env.STRIPE_SECRET_KEY || process.env.STRIPE_SECRET_KEY === 'sk_test_REPLACE_ME') {
@@ -42,7 +43,7 @@ app.get('/api/matches', (req, res) => {
 // Get all players (strip passwords!)
 app.get('/api/players', (req, res) => {
     const players = ServerData.getPlayers().map(p => {
-        const { passwordHash, ...safe } = p;
+        const { passwordHash, email, ...safe } = p;
         return safe;
     });
     res.json(players);
@@ -53,7 +54,7 @@ app.get('/api/players', (req, res) => {
 // Register a new player
 app.post('/api/register', async (req, res) => {
     try {
-        const { name, password, city, ageCategory, position, positionName, level, photo } = req.body;
+        const { name, email, password, city, ageCategory, position, positionName, level, photo } = req.body;
 
         if (!name || !password || !city || !position) {
             return res.status(400).json({ error: 'Toate câmpurile sunt obligatorii' });
@@ -86,11 +87,15 @@ app.post('/api/register', async (req, res) => {
             matchesPlayed: 0,
             photo: photo || '',
             avatar: photo ? '' : '⚽',
+            email: email || '',
             passwordHash,
             createdAt: new Date().toISOString(),
         };
 
         ServerData.savePlayer(player);
+
+        // Send welcome email
+        EmailService.notifyWelcome(player).catch(() => {});
 
         // Return player without password
         const { passwordHash: _, ...safePlayer } = player;
@@ -313,6 +318,11 @@ app.post('/api/matches', (req, res) => {
         };
 
         ServerData.saveMatch(match);
+
+        // Notify players in this city about the new match
+        const allPlayers = ServerData.getPlayers();
+        EmailService.notifyNewMatch(match, allPlayers).catch(() => {});
+
         res.json(match);
     } catch (err) {
         res.status(500).json({ error: err.message });

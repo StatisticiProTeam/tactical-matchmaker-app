@@ -6,6 +6,7 @@ const RegisterPage = {
     state: {
         step: 1,
         name: '',
+        email: '',
         password: '',
         confirmPassword: '',
         city: '',
@@ -51,6 +52,13 @@ const RegisterPage = {
         <label class="form-label">Numele tău complet</label>
         <input class="form-input" type="text" id="reg-name" placeholder="ex: Andrei Popescu"
           value="${this.state.name}" oninput="RegisterPage.state.name = this.value">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Adresa de Email 📧</label>
+        <input class="form-input" type="email" id="reg-email" placeholder="ex: andrei@gmail.com"
+          value="${this.state.email}" oninput="RegisterPage.state.email = this.value">
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">Vei primi notificări despre meciuri noi în orașul tău</div>
       </div>
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md);">
@@ -281,6 +289,7 @@ const RegisterPage = {
         const { step, name, city, position, level, avatar, password, confirmPassword, ageCategory } = this.state;
         if (step === 1) {
             if (!name.trim()) return Components.toast('Introdu-ți numele!', 'error');
+            if (!this.state.email || !this.state.email.includes('@')) return Components.toast('Introdu o adresă de email validă!', 'error');
             if (!password || password.length < 4) return Components.toast('Parola trebuie să aibă minim 4 caractere!', 'error');
             if (password !== confirmPassword) return Components.toast('Parolele nu coincid!', 'error');
             if (!city) return Components.toast('Alege orașul!', 'error');
@@ -312,6 +321,7 @@ const RegisterPage = {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     name: name.trim(),
+                    email: this.state.email.trim(),
                     password,
                     city,
                     ageCategory: this.state.ageCategory,
@@ -335,7 +345,7 @@ const RegisterPage = {
             DataStore.setCurrentUser(data.id, this.state.remember);
 
             // Reset form
-            this.state = { step: 1, name: '', password: '', confirmPassword: '', city: '', ageCategory: '', position: '', level: '', photo: '', remember: true };
+            this.state = { step: 1, name: '', email: '', password: '', confirmPassword: '', city: '', ageCategory: '', position: '', level: '', photo: '', remember: true };
 
             Components.toast(`Bine ai venit, ${data.name}! 🎉`, 'success');
             App.navigate('profile', data.id);
