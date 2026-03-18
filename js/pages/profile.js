@@ -43,7 +43,7 @@ const ProfilePage = {
               <div class="profile-stats-grid">
                 <div class="stat-card">
                   <div class="stat-value">${player.elo}</div>
-                  <div class="stat-label">Rating ELO</div>
+                  <div class="stat-label">Rating OVR</div>
                 </div>
                 <div class="stat-card">
                   <div class="stat-value">${player.matchesPlayed}</div>

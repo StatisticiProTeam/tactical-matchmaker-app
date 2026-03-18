@@ -161,7 +161,7 @@ const RegisterPage = {
 
         return `
       <h2 style="margin-bottom:var(--space-sm);">Nivelul tău 📊</h2>
-      <p style="margin-bottom:var(--space-xl);">Evaluează-ți sincer nivelul. ELO-ul va fi ajustat în timp de coechipierii tăi.</p>
+      <p style="margin-bottom:var(--space-xl);">Evaluează-ți sincer nivelul. OVR-ul va fi ajustat în timp de coechipierii tăi.</p>
 
       <div style="display:grid;gap:var(--space-md);">
         ${levels.map(l => `
@@ -230,7 +230,7 @@ const RegisterPage = {
           <span>${this.state.ageCategory === '5-7' ? '5 – 7 ani 🌟' : '7 – 12 ani ⚽'}</span>
         </div>
         <div style="display:flex;justify-content:space-between;font-size:0.85rem;">
-          <span style="color:var(--text-muted);">ELO Inițial</span>
+          <span style="color:var(--text-muted);">OVR Inițial</span>
           <span style="color:var(--green-400);font-weight:700;">${elo} (${tier.name} ${tier.icon})</span>
         </div>
       </div>

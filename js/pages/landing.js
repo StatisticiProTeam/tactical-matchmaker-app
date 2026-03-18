@@ -14,7 +14,7 @@ const LandingPage = {
           <div class="hero-badge">⚽ Platforma #1 pentru fotbaliștii amatori din România</div>
           <h1>Joacă la nivelul tău.<br><span class="gradient-text">Fiecare meci contează.</span></h1>
           <p class="hero-subtitle">
-            Sistemul ELO te evaluează, colegii te notează, iar tu găsești meciuri echilibrate în orașul tău. 
+            Sistemul OVR te evaluează, colegii te notează, iar tu găsești meciuri echilibrate în orașul tău. 
             Nu mai joci niciodată cu cineva mult prea bun sau mult prea slab.
           </p>
           <div class="hero-actions">
@@ -32,7 +32,7 @@ const LandingPage = {
           <div class="features-grid">
             <div class="feature-card animate-in animate-delay-1">
               <div class="feature-icon">📊</div>
-              <h3>Rating ELO Real</h3>
+              <h3>Rating OVR Real</h3>
               <p>Sistem de rating ca la șah sau jocurile video competitive. Fiecare meci îți actualizează scorul.</p>
             </div>
             <div class="feature-card animate-in animate-delay-2">
@@ -43,7 +43,7 @@ const LandingPage = {
             <div class="feature-card animate-in animate-delay-3">
               <div class="feature-icon">🎯</div>
               <h3>Matchmaking Inteligent</h3>
-              <p>Găsești meciuri exact pe nivelul tău, în orașul tău. Echipe echilibrate automat prin ELO.</p>
+              <p>Găsești meciuri exact pe nivelul tău, în orașul tău. Echipe echilibrate automat prin OVR.</p>
             </div>
           </div>
         </section>
@@ -59,7 +59,7 @@ const LandingPage = {
             <div class="step-item animate-in animate-delay-1">
               <div class="step-number">1</div>
               <h4>Creează-ți Profilul</h4>
-              <p>Alege-ți poziția, orașul și evaluează-ți nivelul inițial. Primești un rating ELO de start.</p>
+              <p>Alege-ți poziția, orașul și evaluează-ți nivelul inițial. Primești un rating OVR de start.</p>
             </div>
             <div class="step-item animate-in animate-delay-2">
               <div class="step-number">2</div>
@@ -69,7 +69,7 @@ const LandingPage = {
             <div class="step-item animate-in animate-delay-3">
               <div class="step-number">3</div>
               <h4>Urcă în Clasament</h4>
-              <p>Rating-ul tău ELO se actualizează. Cardurile treceau de la Bronze la Diamond. Arată-le cine ești!</p>
+              <p>Rating-ul tău OVR se actualizează. Cardurile treceau de la Bronze la Diamond. Arată-le cine ești!</p>
             </div>
           </div>
         </section>

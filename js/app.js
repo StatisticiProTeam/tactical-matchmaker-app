@@ -114,7 +114,7 @@ const App = {
                     ? `<img src="${currentUser.photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`
                     : (currentUser.avatar || '⚽');
                 userArea.innerHTML = `
-          <span style="font-size:0.8rem;color:var(--text-muted);">${currentUser.elo} ELO</span>
+          <span style="font-size:0.8rem;color:var(--text-muted);">${currentUser.elo} OVR</span>
           <div class="user-avatar" onclick="App.navigate('profile', '${currentUser.id}')"
             title="${currentUser.name}" style="background:${tier.color}22;border-color:${tier.color}66;">
             ${navAvatar}
@@ -165,7 +165,7 @@ const App = {
         }
 
         if (currentUser.elo < match.eloMin || currentUser.elo > match.eloMax) {
-            return Components.toast(`ELO-ul tău (${currentUser.elo}) nu este în range-ul meciului (${match.eloMin}-${match.eloMax})!`, 'error');
+            return Components.toast(`OVR-ul tău (${currentUser.elo}) nu este în range-ul meciului (${match.eloMin}-${match.eloMax})!`, 'error');
         }
 
         if (match.ageCategory && currentUser.ageCategory && match.ageCategory !== currentUser.ageCategory) {

@@ -40,7 +40,7 @@ const RatePage = {
           <div class="card" style="text-align:center;padding:var(--space-3xl);">
             <div style="font-size:4rem;margin-bottom:var(--space-lg);">🎉</div>
             <h2>Evaluările au fost trimise!</h2>
-            <p style="margin-top:var(--space-md);margin-bottom:var(--space-xl);">Rating-urile ELO au fost actualizate. Mulțumim!</p>
+            <p style="margin-top:var(--space-md);margin-bottom:var(--space-xl);">Rating-urile OVR au fost actualizate. Mulțumim!</p>
             <div style="display:flex;gap:var(--space-md);justify-content:center;">
               <button class="btn btn-secondary" onclick="App.navigate('matches')">Înapoi la Meciuri</button>
               <button class="btn btn-primary" onclick="App.navigate('profile', '${currentUser.id}')">Vezi Profilul Meu</button>
@@ -88,7 +88,7 @@ const RatePage = {
                     <div class="rate-player-avatar" style="font-size:1.5rem;">${p.avatar || '⚽'}</div>
                     <div>
                       <div style="font-weight:600;">${p.name}</div>
-                      <div style="font-size:0.8rem;color:var(--text-muted);">${p.positionName || p.position} • ${tier.icon} ${p.elo} ELO</div>
+                      <div style="font-size:0.8rem;color:var(--text-muted);">${p.positionName || p.position} • ${tier.icon} ${p.elo} OVR</div>
                     </div>
                   </div>
 

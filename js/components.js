@@ -162,7 +162,7 @@ const Components = {
           </div>
         </div>
         <div class="match-footer">
-          <div class="elo-range">ELO: ${match.eloMin} — ${match.eloMax}
+          <div class="elo-range">OVR: ${match.eloMin} — ${match.eloMax}
             ${remaining > 0 ? `<span style="color:var(--green-400);margin-left:8px;">${remaining} locuri libere</span>` : ''}
           </div>
           ${match.status === 'open' && DataStore.getCurrentUser() ? `<button class="btn btn-primary btn-sm" onclick="App.joinMatch('${match.id}')">Intră în Meci</button>` : ''}

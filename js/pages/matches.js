@@ -86,7 +86,7 @@ const MatchesPage = {
               </select>
             </div>
             <div style="display:flex;align-items:center;gap:var(--space-sm);">
-              <span style="font-size:0.85rem;color:var(--text-muted);white-space:nowrap;">ELO max: <strong style="color:var(--green-400);">${this.state.eloMax}</strong></span>
+              <span style="font-size:0.85rem;color:var(--text-muted);white-space:nowrap;">OVR max: <strong style="color:var(--green-400);">${this.state.eloMax}</strong></span>
               <input type="range" class="range-slider" min="500" max="2000" step="50" value="${this.state.eloMax}"
                 oninput="MatchesPage.filterElo(this.value)" style="width:150px;">
             </div>
@@ -171,11 +171,11 @@ const MatchesPage = {
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">ELO Min</label>
+          <label class="form-label">OVR Min</label>
           <input class="form-input" type="number" id="new-match-elomin" value="800" min="100" step="50">
         </div>
         <div class="form-group">
-          <label class="form-label">ELO Max</label>
+          <label class="form-label">OVR Max</label>
           <input class="form-input" type="number" id="new-match-elomax" value="1600" min="100" step="50">
         </div>
       </div>
