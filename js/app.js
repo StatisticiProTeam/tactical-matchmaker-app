@@ -92,7 +92,19 @@ const App = {
 
         appContent.innerHTML = html;
         this.updateNav();
+        this.updatePromoBar();
         window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+
+    updatePromoBar() {
+        const countEl = document.getElementById('promo-count');
+        const barEl = document.getElementById('promo-progress-bar');
+        if (!countEl || !barEl) return;
+
+        const playerCount = DataStore.getPlayers().length;
+        const pct = Math.min((playerCount / 100) * 100, 100);
+        countEl.textContent = playerCount;
+        setTimeout(() => { barEl.style.width = pct + '%'; }, 100);
     },
 
     updateNav() {
