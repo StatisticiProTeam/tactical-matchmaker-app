@@ -124,7 +124,7 @@ const App = {
             } else {
                 userArea.innerHTML = `
           <button class="btn btn-sm btn-secondary" onclick="App.showLoginModal()">Intră în Cont</button>
-          <button class="btn btn-sm btn-primary" onclick="App.navigate('register')">Înscrie-te</button>
+          <button class="btn btn-sm btn-primary" onclick="App.navigate('register')">Crează-ți cont</button>
         `;
             }
         }

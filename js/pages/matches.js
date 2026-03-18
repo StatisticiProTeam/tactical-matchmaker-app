@@ -58,7 +58,7 @@ const MatchesPage = {
               </button>
             ` : !currentUser ? `
               <button class="btn btn-primary" onclick="App.navigate('register')">
-                🚀 Înscrie-te pentru a juca
+                🚀 Crează-ți cont pentru a juca
               </button>
             ` : ''}
           </div>
