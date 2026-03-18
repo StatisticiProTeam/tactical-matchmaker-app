@@ -1,5 +1,5 @@
 // Service Worker for Tactical Match-Maker PWA
-const CACHE_NAME = 'tmm-v1';
+const CACHE_NAME = 'tmm-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
