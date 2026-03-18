@@ -33,6 +33,7 @@ const ProfilePage = {
               <div style="display:flex;align-items:center;gap:var(--space-md);margin-bottom:var(--space-sm);">
                 <h1 style="margin:0;">${player.name}</h1>
                 ${isOwn ? '<span style="font-size:0.75rem;padding:4px 10px;border-radius:var(--radius-full);background:rgba(34,197,94,0.15);color:var(--green-400);border:1px solid rgba(34,197,94,0.3);">Profilul Tău</span>' : ''}
+                ${isOwn ? `<button class="btn btn-sm btn-secondary" onclick="ProfilePage.showEditModal('${player.id}')" style="margin-left:auto;">✏️ Editează Contul</button>` : ''}
               </div>
               <p style="font-size:1rem;margin-bottom:var(--space-lg);">
                 ${player.positionName} • 📍 ${player.city} • ${tier.icon} ${tier.name}
@@ -114,5 +115,93 @@ const ProfilePage = {
         </div>
       </div>
     `;
+    },
+
+    showEditModal(playerId) {
+        const player = DataStore.getPlayer(playerId);
+        if (!player) return;
+
+        Components.showModal('✏️ Editează Contul', `
+          <p style="color:var(--text-secondary);margin-bottom:var(--space-lg);">Modifică datele contului tău:</p>
+          <div class="form-group">
+            <label class="form-label">Adresa de Email 📧</label>
+            <input class="form-input" type="email" id="edit-email" placeholder="ex: andrei@gmail.com"
+              value="${player.email || ''}">
+            <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">Primești notificări la această adresă</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Oraș 📍</label>
+            <select class="form-select" id="edit-city">
+              ${['București', 'Cluj-Napoca', 'Timișoara', 'Iași', 'Brașov', 'Constanța', 'Sibiu', 'Oradea', 'Craiova', 'Galați'].map(c =>
+                `<option value="${c}" ${player.city === c ? 'selected' : ''}>${c}</option>`
+              ).join('')}
+            </select>
+          </div>
+          <hr style="border:0;border-top:1px solid var(--border-subtle);margin:var(--space-lg) 0;">
+          <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:var(--space-md);">🔒 Schimbă parola (lasă gol dacă nu vrei să o schimbi)</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md);">
+            <div class="form-group">
+              <label class="form-label">Parola nouă</label>
+              <input class="form-input" type="password" id="edit-password" placeholder="Minim 4 caractere">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Confirmă parola</label>
+              <input class="form-input" type="password" id="edit-confirm" placeholder="Repetă parola">
+            </div>
+          </div>
+          <div id="edit-error" style="color:var(--red-400);font-size:0.85rem;margin-bottom:var(--space-md);display:none;"></div>
+          <div style="display:flex;justify-content:flex-end;gap:var(--space-md);margin-top:var(--space-lg);">
+            <button class="btn btn-secondary" onclick="Components.closeModal()">Anulează</button>
+            <button class="btn btn-primary" id="edit-save-btn" onclick="ProfilePage.saveProfile('${playerId}')">💾 Salvează</button>
+          </div>
+        `);
+    },
+
+    async saveProfile(playerId) {
+        const email = document.getElementById('edit-email')?.value?.trim() || '';
+        const city = document.getElementById('edit-city')?.value || '';
+        const password = document.getElementById('edit-password')?.value || '';
+        const confirm = document.getElementById('edit-confirm')?.value || '';
+        const errEl = document.getElementById('edit-error');
+        const btn = document.getElementById('edit-save-btn');
+
+        if (password && password.length < 4) {
+            errEl.textContent = 'Parola trebuie să aibă minim 4 caractere!';
+            errEl.style.display = 'block';
+            return;
+        }
+        if (password && password !== confirm) {
+            errEl.textContent = 'Parolele nu coincid!';
+            errEl.style.display = 'block';
+            return;
+        }
+
+        if (btn) { btn.disabled = true; btn.textContent = '⏳ Se salvează...'; }
+
+        try {
+            const resp = await fetch('/api/update-profile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ playerId, email, city, password: password || undefined }),
+            });
+
+            const data = await resp.json();
+
+            if (!resp.ok) {
+                errEl.textContent = data.error || 'Eroare la salvare';
+                errEl.style.display = 'block';
+                if (btn) { btn.disabled = false; btn.textContent = '💾 Salvează'; }
+                return;
+            }
+
+            DataStore.savePlayer(data);
+            Components.closeModal();
+            Components.toast('Contul a fost actualizat! ✅', 'success');
+            App.renderPage();
+        } catch (err) {
+            errEl.textContent = 'Eroare de conexiune.';
+            errEl.style.display = 'block';
+            if (btn) { btn.disabled = false; btn.textContent = '💾 Salvează'; }
+        }
     },
 };

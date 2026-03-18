@@ -140,6 +140,40 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
+// Update profile
+app.post('/api/update-profile', async (req, res) => {
+    try {
+        const { playerId, email, city, password } = req.body;
+
+        if (!playerId) {
+            return res.status(400).json({ error: 'ID jucător lipsă' });
+        }
+
+        const player = ServerData.getPlayers().find(p => p.id === playerId);
+        if (!player) {
+            return res.status(404).json({ error: 'Jucătorul nu a fost găsit' });
+        }
+
+        // Update fields
+        if (email !== undefined) player.email = email;
+        if (city) player.city = city;
+
+        // Update password if provided
+        if (password && password.length >= 4) {
+            player.passwordHash = await bcrypt.hash(password, 10);
+        }
+
+        ServerData.savePlayer(player);
+
+        // Return player without sensitive data
+        const { passwordHash, ...safePlayer } = player;
+        res.json(safePlayer);
+    } catch (err) {
+        console.error('Update profile error:', err.message);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Create a Stripe Checkout Session
 app.post('/api/create-checkout-session', async (req, res) => {
     try {
