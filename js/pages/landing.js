@@ -29,29 +29,9 @@ const LandingPage = {
 
         <!-- 🏆 Promo Banner: 100 Players Challenge -->
         <section class="container" style="margin-top:var(--space-xl);">
-          <div class="animate-in" style="
-            background: linear-gradient(135deg, rgba(34,197,94,0.08) 0%, rgba(16,185,129,0.04) 100%);
-            border: 1px solid rgba(34,197,94,0.25);
-            border-radius: var(--radius-xl);
-            padding: var(--space-2xl);
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-          ">
-            <div style="font-size:3rem;margin-bottom:var(--space-md);">🏆</div>
-            <h2 style="margin-bottom:var(--space-sm);color:var(--green-400);font-size:1.4rem;">PROVOCARE: 100 DE JUCĂTORI</h2>
-            <p style="max-width:500px;margin:0 auto var(--space-lg);color:var(--text-secondary);font-size:0.95rem;">
-              La primii <strong style="color:white;">100 de jucători</strong> înregistrați, organizăm un <strong style="color:var(--green-400);">MECI GRATUIT</strong> în <strong style="color:white;">București</strong>! ⚽
-            </p>
-            <div style="max-width:400px;margin:0 auto var(--space-sm);">
-              <div style="height:12px;border-radius:6px;background:rgba(255,255,255,0.08);overflow:hidden;">
-                <div id="promo-progress-bar" style="height:100%;border-radius:6px;background:linear-gradient(90deg,var(--green-500),var(--green-400));transition:width 1s ease;width:0%;"></div>
-              </div>
-            </div>
-            <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:var(--space-lg);">
-              <strong id="promo-count" style="color:var(--green-400);">...</strong> / 100 jucători înregistrați
-            </p>
-            ${!currentUser ? `<button class="btn btn-primary" onclick="App.navigate('register')">🚀 Înregistrează-te acum!</button>` : ''}
+          <div class="animate-in" style="cursor:pointer;border-radius:var(--radius-xl);overflow:hidden;border:1px solid rgba(34,197,94,0.25);"
+               ${!currentUser ? `onclick="App.navigate('register')"` : ''}>
+            <img src="img/promo-banner.png" alt="Provocare: 100 de jucători" style="width:100%;display:block;border-radius:var(--radius-xl);">
           </div>
         </section>
 
