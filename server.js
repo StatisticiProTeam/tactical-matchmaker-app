@@ -369,6 +369,44 @@ app.post('/api/matches', (req, res) => {
     }
 });
 
+// Leave a match
+app.post('/api/matches/:id/leave', (req, res) => {
+    try {
+        const { playerId } = req.body;
+        const matchId = req.params.id;
+
+        if (!playerId || !matchId) {
+            return res.status(400).json({ error: 'Date lipsă' });
+        }
+
+        const match = ServerData.getMatches().find(m => m.id === matchId);
+        if (!match) {
+            return res.status(404).json({ error: 'Meciul nu a fost găsit' });
+        }
+
+        if (!match.players || !match.players.includes(playerId)) {
+            return res.status(400).json({ error: 'Nu ești în acest meci' });
+        }
+
+        // Remove from players array
+        match.players = match.players.filter(id => id !== playerId);
+
+        // Remove from team1 or team2
+        if (match.team1) match.team1 = match.team1.filter(id => id !== playerId);
+        if (match.team2) match.team2 = match.team2.filter(id => id !== playerId);
+
+        // Reopen match if it was full
+        if (match.status === 'full') {
+            match.status = 'open';
+        }
+
+        ServerData.saveMatch(match);
+        res.json(match);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Helper
 function getBaseUrl(req) {
     const proto = req.headers['x-forwarded-proto'] || req.protocol;
