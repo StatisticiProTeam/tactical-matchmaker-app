@@ -1717,3 +1717,82 @@ a:hover { color: var(--green-500); }
     padding-bottom: env(safe-area-inset-bottom);
   }
 }
+
+/* --- Bottom Navigation Bar --- */
+.bottom-nav {
+  display: none; /* Hidden on desktop */
+}
+
+@media (max-width: 768px) {
+  .bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: rgba(17, 24, 39, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border-subtle);
+    padding: 6px 0;
+    padding-bottom: max(6px, env(safe-area-inset-bottom, 6px));
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  .bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 6px 16px;
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+    flex: 1;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .bottom-nav-item.active {
+    color: var(--green-400);
+  }
+
+  .bottom-nav-item.active .bottom-nav-icon {
+    transform: scale(1.15);
+  }
+
+  .bottom-nav-icon {
+    font-size: 1.4rem;
+    line-height: 1;
+    transition: transform var(--transition-fast);
+  }
+
+  .bottom-nav-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    font-family: var(--font-body);
+    letter-spacing: 0.02em;
+  }
+
+  /* Hide top nav links on mobile — use bottom bar instead */
+  .navbar-links {
+    display: none !important;
+  }
+
+  .mobile-menu-btn {
+    display: none !important;
+  }
+
+  /* Add padding at bottom to not overlap bottom nav */
+  main {
+    padding-bottom: 80px;
+  }
+
+  footer {
+    padding-bottom: 90px !important;
+  }
+}

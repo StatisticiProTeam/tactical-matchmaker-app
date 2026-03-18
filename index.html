@@ -52,6 +52,22 @@
     <!-- Pages rendered here by JS -->
   </main>
 
+  <!-- Mobile Bottom Nav -->
+  <nav class="bottom-nav" id="bottom-nav">
+    <button class="bottom-nav-item active" onclick="App.navigate('home')" data-page="home">
+      <span class="bottom-nav-icon">🏠</span>
+      <span class="bottom-nav-label">Acasă</span>
+    </button>
+    <button class="bottom-nav-item" onclick="App.navigate('matches')" data-page="matches">
+      <span class="bottom-nav-icon">⚽</span>
+      <span class="bottom-nav-label">Meciuri</span>
+    </button>
+    <button class="bottom-nav-item" onclick="App.navigate('register')" data-page="register" id="bottom-nav-profile">
+      <span class="bottom-nav-icon">👤</span>
+      <span class="bottom-nav-label">Cont</span>
+    </button>
+  </nav>
+
   <!-- Footer -->
   <footer style="border-top:1px solid var(--border-subtle);padding:2rem;text-align:center;color:var(--text-muted);font-size:0.8rem;position:relative;z-index:1;">
     <p>⚽ <strong>Tactical Match-Maker</strong> — Fotbal amator la nivel profesionist</p>

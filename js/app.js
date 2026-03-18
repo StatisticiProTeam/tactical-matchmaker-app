@@ -128,6 +128,22 @@ const App = {
         `;
             }
         }
+
+        // Update bottom nav active state
+        const bottomItems = document.querySelectorAll('.bottom-nav-item');
+        bottomItems.forEach(item => {
+            const page = item.getAttribute('data-page');
+            item.classList.toggle('active', page === this.currentPage);
+        });
+
+        // Update bottom nav profile button
+        const profileBtn = document.getElementById('bottom-nav-profile');
+        if (profileBtn && currentUser) {
+            profileBtn.setAttribute('onclick', `App.navigate('profile', '${currentUser.id}')`);
+            profileBtn.setAttribute('data-page', 'profile');
+            profileBtn.querySelector('.bottom-nav-icon').textContent = currentUser.avatar || '👤';
+            profileBtn.querySelector('.bottom-nav-label').textContent = 'Profil';
+        }
     },
 
     joinMatch(matchId) {
