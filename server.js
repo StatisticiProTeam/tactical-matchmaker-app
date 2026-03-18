@@ -28,9 +28,17 @@ app.use(express.static(path.join(__dirname)));
 // Seed data on startup (disabled — no more demo accounts)
 // ServerData.seedIfEmpty();
 
-// Auto-admin: ensure Eric Danila is admin on every startup
+// Auto-admin: ensure Eric Danila is admin + remove old duplicate
 (() => {
-    const players = ServerData.getPlayers();
+    let players = ServerData.getPlayers();
+    // Remove old duplicate "Eric Dănilă" (with diacritics)
+    const oldEric = players.find(p => p.name === 'Eric Dănilă');
+    if (oldEric) {
+        players = players.filter(p => p.id !== oldEric.id);
+        ServerData._savePlayersArray(players);
+        console.log('   🗑️ Cont vechi Eric Dănilă șters');
+    }
+    // Ensure Eric Danila is admin
     const eric = players.find(p => p.name === 'Eric Danila');
     if (eric && !eric.isAdmin) {
         eric.isAdmin = true;

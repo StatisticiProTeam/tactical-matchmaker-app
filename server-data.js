@@ -123,6 +123,9 @@ const ServerData = {
         writeJSON(PLAYERS_FILE, players);
         return player;
     },
+    _savePlayersArray(players) {
+        writeJSON(PLAYERS_FILE, players);
+    },
 
     getMatches() { return readJSON(MATCHES_FILE); },
     getMatch(id) { return this.getMatches().find(m => m.id === id) || null; },
