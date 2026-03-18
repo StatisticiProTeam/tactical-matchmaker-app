@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 Statistici — Tactical Match-Maker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0e17;
+            color: #f1f5f9;
+            min-height: 100vh;
+            padding: 0;
+        }
+        body::before {
+            content: '';
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(34, 197, 94, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 50%);
+            pointer-events: none; z-index: 0;
+        }
+
+        .page { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 40px 24px; }
+
+        /* Header */
+        .header { text-align: center; margin-bottom: 40px; }
+        .header h1 {
+            font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 2.2rem;
+            background: linear-gradient(180deg, #fff 20%, rgba(255,255,255,0.7) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            margin-bottom: 8px;
+        }
+        .header p { color: #94a3b8; font-size: 0.95rem; }
+        .header .live-dot {
+            display: inline-block; width: 10px; height: 10px; background: #22c55e;
+            border-radius: 50%; margin-right: 6px; animation: pulse 2s ease infinite;
+            box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.85); }
+        }
+
+        /* Stat Cards Grid */
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px; margin-bottom: 36px;
+        }
+        .stat-card {
+            background: rgba(17, 24, 39, 0.8); border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 16px; padding: 24px; text-align: center;
+            transition: all 0.25s ease;
+        }
+        .stat-card:hover {
+            border-color: rgba(34, 197, 94, 0.3);
+            box-shadow: 0 0 30px rgba(34, 197, 94, 0.1);
+            transform: translateY(-3px);
+        }
+        .stat-card .icon { font-size: 2rem; margin-bottom: 10px; }
+        .stat-card .number {
+            font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 2.5rem;
+            background: linear-gradient(135deg, #22c55e, #4ade80);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            line-height: 1.1;
+        }
+        .stat-card .label {
+            font-size: 0.85rem; color: #94a3b8; margin-top: 6px; font-weight: 500;
+        }
+        .stat-card.highlight { border-color: rgba(34, 197, 94, 0.25); background: rgba(34, 197, 94, 0.06); }
+        .stat-card.highlight .number {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            -webkit-background-clip: text; background-clip: text;
+        }
+
+        /* Section */
+        .section { margin-bottom: 36px; }
+        .section-title {
+            font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.3rem;
+            margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+        }
+        .section-title .accent { color: #22c55e; }
+
+        /* City Bars */
+        .city-list { display: flex; flex-direction: column; gap: 12px; }
+        .city-row {
+            display: flex; align-items: center; gap: 14px;
+            background: rgba(17, 24, 39, 0.6); border: 1px solid rgba(148, 163, 184, 0.08);
+            border-radius: 12px; padding: 14px 18px;
+        }
+        .city-name { width: 140px; font-weight: 600; font-size: 0.9rem; flex-shrink: 0; }
+        .city-bar-track {
+            flex: 1; height: 28px; background: rgba(30, 41, 59, 0.8);
+            border-radius: 8px; overflow: hidden; position: relative;
+        }
+        .city-bar {
+            height: 100%; border-radius: 8px;
+            background: linear-gradient(90deg, #22c55e, #4ade80);
+            transition: width 1s ease; min-width: 30px;
+            display: flex; align-items: center; justify-content: flex-end; padding-right: 10px;
+        }
+        .city-bar span {
+            font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 0.8rem; color: #0a0e17;
+        }
+
+        /* Recent Players Table */
+        .recent-table {
+            width: 100%; border-collapse: separate; border-spacing: 0;
+            background: rgba(17, 24, 39, 0.6); border: 1px solid rgba(148, 163, 184, 0.08);
+            border-radius: 14px; overflow: hidden;
+        }
+        .recent-table th {
+            text-align: left; padding: 14px 18px; font-size: 0.75rem;
+            color: #64748b; text-transform: uppercase; letter-spacing: 0.08em;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1); font-weight: 600;
+        }
+        .recent-table td {
+            padding: 12px 18px; font-size: 0.9rem; border-bottom: 1px solid rgba(148, 163, 184, 0.05);
+        }
+        .recent-table tr:last-child td { border-bottom: none; }
+        .recent-table tr:hover td { background: rgba(34, 197, 94, 0.04); }
+        .elo-badge {
+            display: inline-block; padding: 3px 10px; border-radius: 20px;
+            font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 0.8rem;
+        }
+        .elo-bronze { background: rgba(205, 127, 50, 0.15); color: #cd7f32; }
+        .elo-silver { background: rgba(192, 192, 192, 0.15); color: #c0c0c0; }
+        .elo-gold { background: rgba(255, 215, 0, 0.15); color: #ffd700; }
+        .elo-platinum { background: rgba(96, 165, 250, 0.15); color: #60a5fa; }
+        .elo-diamond { background: rgba(192, 132, 252, 0.15); color: #c084fc; }
+
+        /* Loading */
+        .loading {
+            text-align: center; padding: 60px; color: #64748b; font-size: 1.1rem;
+        }
+        .loading .spinner {
+            width: 40px; height: 40px; border: 3px solid rgba(34, 197, 94, 0.2);
+            border-top-color: #22c55e; border-radius: 50%;
+            animation: spin 0.8s linear infinite; margin: 0 auto 16px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Back link */
+        .back-link {
+            display: inline-flex; align-items: center; gap: 6px; color: #94a3b8;
+            text-decoration: none; font-size: 0.9rem; font-weight: 500; margin-bottom: 24px;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: #22c55e; }
+
+        /* Refresh button */
+        .refresh-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 22px; background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white; border: none; border-radius: 10px;
+            font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.9rem;
+            cursor: pointer; transition: all 0.25s;
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+        }
+        .refresh-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(34, 197, 94, 0.4); }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .city-name { width: 100px; font-size: 0.8rem; }
+            .header h1 { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+    <a href="/" class="back-link">← Înapoi la aplicație</a>
+
+    <div class="header">
+        <h1>📊 Statistici Platformă</h1>
+        <p><span class="live-dot"></span> Date live din baza de date</p>
+    </div>
+
+    <div id="content">
+        <div class="loading">
+            <div class="spinner"></div>
+            Se încarcă statisticile...
+        </div>
+    </div>
+</div>
+
+<script>
+async function loadStats() {
+    try {
+        const res = await fetch('/api/stats');
+        const data = await res.json();
+        renderStats(data);
+    } catch (err) {
+        document.getElementById('content').innerHTML = `
+            <div class="loading" style="color: #f87171;">
+                ❌ Eroare la încărcarea datelor: ${err.message}
+            </div>`;
+    }
+}
+
+function getEloClass(elo) {
+    if (elo >= 1500) return 'elo-diamond';
+    if (elo >= 1300) return 'elo-platinum';
+    if (elo >= 1100) return 'elo-gold';
+    if (elo >= 900) return 'elo-silver';
+    return 'elo-bronze';
+}
+
+function formatDate(iso) {
+    if (!iso) return '—';
+    const d = new Date(iso);
+    return d.toLocaleDateString('ro-RO', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function renderStats(data) {
+    const maxCity = Math.max(...Object.values(data.playersByCity), 1);
+
+    const cityBars = Object.entries(data.playersByCity)
+        .sort((a, b) => b[1] - a[1])
+        .map(([city, count]) => `
+            <div class="city-row">
+                <div class="city-name">📍 ${city}</div>
+                <div class="city-bar-track">
+                    <div class="city-bar" style="width: ${Math.max((count / maxCity) * 100, 8)}%">
+                        <span>${count}</span>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+    const recentRows = (data.recentPlayers || []).map(p => `
+        <tr>
+            <td><strong>${p.name}</strong></td>
+            <td>📍 ${p.city}</td>
+            <td><span class="elo-badge ${getEloClass(p.elo)}">${p.elo}</span></td>
+            <td>${formatDate(p.createdAt)}</td>
+        </tr>
+    `).join('');
+
+    document.getElementById('content').innerHTML = `
+        <!-- Main Stats -->
+        <div class="stats-grid">
+            <div class="stat-card highlight">
+                <div class="icon">👥</div>
+                <div class="number">${data.totalPlayers}</div>
+                <div class="label">Jucători Înregistrați</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon">⚽</div>
+                <div class="number">${data.totalMatches}</div>
+                <div class="label">Total Meciuri</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon">🟢</div>
+                <div class="number">${data.openMatches}</div>
+                <div class="label">Meciuri Deschise</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon">💰</div>
+                <div class="number">${data.totalRevenue} RON</div>
+                <div class="label">Venituri Totale</div>
+            </div>
+        </div>
+
+        <!-- Cities -->
+        <div class="section">
+            <div class="section-title">📍 Jucători pe <span class="accent">oraș</span></div>
+            <div class="city-list">${cityBars || '<p style="color:#64748b">Niciun jucător încă</p>'}</div>
+        </div>
+
+        <!-- Recent Players -->
+        <div class="section">
+            <div class="section-title">🆕 Ultimii jucători <span class="accent">înregistrați</span></div>
+            ${recentRows ? `
+            <table class="recent-table">
+                <thead>
+                    <tr>
+                        <th>Nume</th>
+                        <th>Oraș</th>
+                        <th>ELO</th>
+                        <th>Data înregistrării</th>
+                    </tr>
+                </thead>
+                <tbody>${recentRows}</tbody>
+            </table>` : '<p style="color:#64748b">Niciun jucător încă</p>'}
+        </div>
+
+        <!-- Refresh -->
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="refresh-btn" onclick="loadStats()">🔄 Reîmprospătează</button>
+        </div>
+    `;
+}
+
+loadStats();
+// Auto-refresh every 30 seconds
+setInterval(loadStats, 30000);
+</script>
+
+</body>
+</html>

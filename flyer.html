@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flyer Față-Verso — The Tactical Match-Maker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px;
+            gap: 40px;
+        }
+
+        @media print {
+            body { background: none; padding: 0; gap: 0; }
+            .no-print { display: none !important; }
+            .page-label { display: none !important; }
+            .flyer-page { box-shadow: none !important; }
+            .flyer-page + .flyer-page { page-break-before: always; }
+        }
+
+        /* Print button */
+        .print-bar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(10, 14, 23, 0.95); backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(34, 197, 94, 0.2);
+            padding: 14px 28px; display: flex; align-items: center;
+            justify-content: space-between;
+        }
+        .print-bar-title {
+            font-family: 'Outfit', sans-serif; font-weight: 700;
+            color: #f1f5f9; font-size: 1rem;
+        }
+        .print-bar-title span { color: #22c55e; }
+        .print-btn {
+            padding: 10px 24px; background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white; border: none; border-radius: 10px;
+            font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.9rem;
+            cursor: pointer; box-shadow: 0 4px 20px rgba(34, 197, 94, 0.4);
+            transition: all 0.2s;
+        }
+        .print-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 30px rgba(34, 197, 94, 0.5); }
+
+        .page-label {
+            font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1rem;
+            color: #6b7280; text-transform: uppercase; letter-spacing: 0.1em;
+            margin-top: 20px;
+        }
+
+        /* ======================== */
+        /* FLYER PAGE - Shared      */
+        /* ======================== */
+        .flyer-page {
+            width: 210mm; min-height: 297mm;
+            background: #0a0e17; color: #f1f5f9;
+            position: relative; overflow: hidden;
+            display: flex; flex-direction: column;
+            align-items: center; padding: 40px 35px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+        }
+        .flyer-page::before {
+            content: ''; position: absolute; top: -20%; left: -20%;
+            width: 60%; height: 60%;
+            background: radial-gradient(circle, rgba(34, 197, 94, 0.07) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .flyer-page::after {
+            content: ''; position: absolute; bottom: -10%; right: -15%;
+            width: 50%; height: 50%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .content {
+            position: relative; z-index: 1; width: 100%;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        /* ======================== */
+        /* FRONT PAGE (Față)         */
+        /* ======================== */
+        .top-deco { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+        .top-deco .line { width: 50px; height: 2px; background: linear-gradient(90deg, transparent, #22c55e); border-radius: 2px; }
+        .top-deco .line.right { background: linear-gradient(90deg, #22c55e, transparent); }
+        .top-deco .dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 12px rgba(34, 197, 94, 0.6); }
+
+        .logo-area { text-align: center; margin-bottom: 22px; }
+        .logo-icon {
+            width: 80px; height: 80px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            border-radius: 20px; display: flex; align-items: center;
+            justify-content: center; font-size: 40px;
+            margin: 0 auto 16px; box-shadow: 0 8px 32px rgba(34, 197, 94, 0.35);
+        }
+        .app-title {
+            font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 36px;
+            letter-spacing: -0.03em; line-height: 1.1;
+            background: linear-gradient(180deg, #fff 20%, rgba(255,255,255,0.75) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .app-title .highlight { -webkit-text-fill-color: #22c55e; }
+        .subtitle { font-size: 14px; color: #94a3b8; margin-top: 8px; font-weight: 500; }
+
+        .tagline {
+            text-align: center; margin-bottom: 28px; padding: 14px 28px;
+            background: rgba(34, 197, 94, 0.08); border: 1px solid rgba(34, 197, 94, 0.15);
+            border-radius: 16px; font-family: 'Outfit', sans-serif;
+            font-weight: 600; font-size: 18px; color: #4ade80;
+        }
+
+        .features {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 14px; width: 100%; margin-bottom: 28px;
+        }
+        .feature-card {
+            background: rgba(17, 24, 39, 0.8); border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 16px; padding: 20px 16px; text-align: center;
+        }
+        .feature-card:nth-child(1) { border-color: rgba(34, 197, 94, 0.2); }
+        .feature-card:nth-child(2) { border-color: rgba(59, 130, 246, 0.2); }
+        .feature-card:nth-child(3) { border-color: rgba(251, 191, 36, 0.2); }
+        .feature-card:nth-child(4) { border-color: rgba(168, 85, 247, 0.2); }
+        .feature-icon { font-size: 34px; margin-bottom: 8px; display: block; }
+        .feature-title { font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 15px; margin-bottom: 5px; }
+        .feature-desc { font-size: 12px; color: #94a3b8; line-height: 1.5; }
+
+        .cta-section {
+            width: 100%; background: rgba(34, 197, 94, 0.06);
+            border: 1px solid rgba(34, 197, 94, 0.15); border-radius: 20px;
+            padding: 26px; display: flex; align-items: center; gap: 24px; margin-bottom: 22px;
+        }
+        .qr-area {
+            flex-shrink: 0; width: 130px; height: 130px; background: white;
+            border-radius: 14px; padding: 8px; display: flex; align-items: center; justify-content: center;
+        }
+        .qr-area img { width: 100%; height: 100%; object-fit: contain; }
+        .cta-content { flex: 1; }
+        .cta-title { font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 22px; margin-bottom: 6px; }
+        .cta-desc { font-size: 13px; color: #94a3b8; line-height: 1.6; margin-bottom: 12px; }
+        .cta-url {
+            display: inline-block; padding: 9px 20px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            border-radius: 10px; font-family: 'Outfit', sans-serif;
+            font-weight: 700; font-size: 13px; color: white;
+            box-shadow: 0 4px 20px rgba(34, 197, 94, 0.35);
+        }
+
+        .footer { text-align: center; width: 100%; }
+        .footer-main { font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 20px; color: #22c55e; margin-bottom: 6px; }
+        .footer-sub { font-size: 12px; color: #64748b; }
+
+        /* ======================== */
+        /* BACK PAGE (Verso)         */
+        /* ======================== */
+        .back-header { text-align: center; margin-bottom: 32px; }
+        .back-header h2 {
+            font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 28px;
+            margin-bottom: 8px;
+        }
+        .back-header h2 span { color: #22c55e; }
+        .back-header p { color: #94a3b8; font-size: 14px; }
+
+        .steps-section { width: 100%; margin-bottom: 32px; }
+        .section-title {
+            font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 20px;
+            text-align: center; margin-bottom: 18px;
+        }
+        .section-title span { color: #22c55e; }
+
+        .steps-vertical { display: flex; flex-direction: column; gap: 14px; }
+        .step-row {
+            display: flex; align-items: center; gap: 18px;
+            background: rgba(17, 24, 39, 0.6); border: 1px solid rgba(148, 163, 184, 0.08);
+            border-radius: 14px; padding: 18px 20px;
+        }
+        .step-num {
+            width: 44px; height: 44px; flex-shrink: 0;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-family: 'Outfit', sans-serif;
+            font-weight: 900; font-size: 18px; color: white;
+        }
+        .step-info { flex: 1; }
+        .step-title { font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 15px; margin-bottom: 3px; }
+        .step-desc { font-size: 12.5px; color: #94a3b8; line-height: 1.5; }
+
+        /* ELO Tiers */
+        .tiers-section { width: 100%; margin-bottom: 32px; }
+        .tiers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .tier-card {
+            border-radius: 14px; padding: 18px; text-align: center;
+            border: 1px solid rgba(148,163,184,0.08);
+            background: rgba(17, 24, 39, 0.6);
+        }
+        .tier-badge {
+            display: inline-block; padding: 4px 14px; border-radius: 20px;
+            font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 13px;
+            margin-bottom: 6px;
+        }
+        .tier-bronze .tier-badge { background: rgba(205, 127, 50, 0.2); color: #cd7f32; }
+        .tier-silver .tier-badge { background: rgba(192, 192, 192, 0.2); color: #c0c0c0; }
+        .tier-gold .tier-badge { background: rgba(255, 215, 0, 0.2); color: #ffd700; }
+        .tier-platinum .tier-badge { background: rgba(96, 165, 250, 0.2); color: #60a5fa; }
+        .tier-diamond .tier-badge { background: rgba(192, 132, 252, 0.2); color: #c084fc; }
+        .tier-range { font-size: 12px; color: #64748b; margin-top: 4px; }
+
+        /* Age Categories */
+        .ages-section { width: 100%; margin-bottom: 32px; }
+        .ages-row { display: flex; gap: 14px; }
+        .age-card {
+            flex: 1; text-align: center; padding: 20px 14px;
+            background: rgba(17, 24, 39, 0.6); border: 1px solid rgba(148, 163, 184, 0.08);
+            border-radius: 14px;
+        }
+        .age-icon { font-size: 36px; margin-bottom: 8px; }
+        .age-title { font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+        .age-desc { font-size: 12px; color: #94a3b8; }
+
+        /* Testimonial */
+        .testimonial {
+            width: 100%; text-align: center; padding: 24px;
+            background: rgba(34, 197, 94, 0.05); border: 1px solid rgba(34, 197, 94, 0.12);
+            border-radius: 18px; margin-bottom: 28px;
+        }
+        .testimonial-quote {
+            font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 16px;
+            font-style: italic; color: #e2e8f0; margin-bottom: 10px; line-height: 1.5;
+        }
+        .testimonial-author { font-size: 13px; color: #4ade80; font-weight: 600; }
+
+        /* Back footer */
+        .back-footer { text-align: center; width: 100%; margin-top: auto; }
+        .back-footer-logo {
+            font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 20px;
+            margin-bottom: 6px;
+        }
+        .back-footer-logo span { color: #22c55e; }
+        .back-footer-url { font-size: 14px; color: #4ade80; font-weight: 600; margin-bottom: 6px; }
+        .back-footer-badges {
+            display: flex; justify-content: center; gap: 14px; margin-top: 10px;
+        }
+        .back-badge {
+            padding: 5px 12px; background: rgba(17, 24, 39, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.1); border-radius: 20px;
+            font-size: 11px; color: #94a3b8; font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Print Bar -->
+<div class="print-bar no-print">
+    <div class="print-bar-title">⚽ Flyer <span>Față-Verso</span> — Pregătit de tipărit</div>
+    <button class="print-btn" onclick="window.print()">🖨️ Printează Flyerul</button>
+</div>
+<div style="height: 60px;" class="no-print"></div>
+
+<!-- ======================== -->
+<!-- PAGINA 1: FAȚĂ (Front)    -->
+<!-- ======================== -->
+<div class="page-label no-print">▲ Pagina 1 — FAȚĂ</div>
+<div class="flyer-page" id="front">
+    <div class="content">
+        <div class="top-deco">
+            <div class="line"></div>
+            <div class="dot"></div>
+            <div class="line right"></div>
+        </div>
+
+        <div class="logo-area">
+            <div class="logo-icon">⚽</div>
+            <div class="app-title">THE TACTICAL<br><span class="highlight">MATCH-MAKER</span></div>
+            <div class="subtitle">Platforma #1 pentru fotbaliștii amatori din România</div>
+        </div>
+
+        <div class="tagline">🏟️ Găsește meciuri &bull; Alătură-te echipei &bull; Joacă mai bine</div>
+
+        <div class="features">
+            <div class="feature-card">
+                <span class="feature-icon">📍</span>
+                <div class="feature-title">Meciuri în orașul tău</div>
+                <div class="feature-desc">Găsește meciuri organizate în orice oraș din România</div>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">📊</span>
+                <div class="feature-title">Sistem ELO</div>
+                <div class="feature-desc">Echipe echilibrate bazate pe nivelul tău de joc</div>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">👨‍👦</span>
+                <div class="feature-title">Pentru toate vârstele</div>
+                <div class="feature-desc">Copii 5–7 ani, juniori 7–12 ani și adulți</div>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">💳</span>
+                <div class="feature-title">Plată rapidă online</div>
+                <div class="feature-desc">Plătești taxa de meci simplu și sigur</div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <div class="qr-area">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://tactical-matchmaker-app.onrender.com&color=0a0e17&bgcolor=ffffff" alt="QR Code">
+            </div>
+            <div class="cta-content">
+                <div class="cta-title">Scanează și intră pe teren! 🎯</div>
+                <div class="cta-desc">Scanează codul QR cu telefonul sau accesează direct adresa de mai jos.</div>
+                <div class="cta-url">tactical-matchmaker-app.onrender.com</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-main">ÎNSCRIE-TE GRATIS ACUM!</div>
+            <div class="footer-sub">Disponibil în orice oraș din România 🇷🇴</div>
+        </div>
+    </div>
+</div>
+
+<!-- ======================== -->
+<!-- PAGINA 2: VERSO (Back)    -->
+<!-- ======================== -->
+<div class="page-label no-print">▼ Pagina 2 — VERSO</div>
+<div class="flyer-page" id="back">
+    <div class="content">
+
+        <div class="back-header">
+            <div class="top-deco" style="justify-content: center; margin-bottom: 16px;">
+                <div class="line"></div>
+                <div class="dot"></div>
+                <div class="line right"></div>
+            </div>
+            <h2>Cum <span>funcționează</span>?</h2>
+            <p>Ești la un pas de cel mai tare meci din viața ta</p>
+        </div>
+
+        <!-- Steps -->
+        <div class="steps-section">
+            <div class="steps-vertical">
+                <div class="step-row">
+                    <div class="step-num">1</div>
+                    <div class="step-info">
+                        <div class="step-title">Creează-ți contul gratuit ✍️</div>
+                        <div class="step-desc">Alege-ți numele, orașul, poziția preferată și nivelul de joc. Durează sub 1 minut!</div>
+                    </div>
+                </div>
+                <div class="step-row">
+                    <div class="step-num">2</div>
+                    <div class="step-info">
+                        <div class="step-title">Alege un meci din orașul tău 📍</div>
+                        <div class="step-desc">Browserez meciurile disponibile, filtrezi după oraș, ELO și categorie de vârstă.</div>
+                    </div>
+                </div>
+                <div class="step-row">
+                    <div class="step-num">3</div>
+                    <div class="step-info">
+                        <div class="step-title">Plătește taxa și înscrie-te 💳</div>
+                        <div class="step-desc">Plata sigură cu cardul prin Stripe. Unele meciuri pot fi și gratuite!</div>
+                    </div>
+                </div>
+                <div class="step-row">
+                    <div class="step-num">4</div>
+                    <div class="step-info">
+                        <div class="step-title">Vino și joacă! ⚽🔥</div>
+                        <div class="step-desc">Prezintă-te la teren, joacă și primește rating ELO după meci.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ELO Tiers -->
+        <div class="tiers-section">
+            <div class="section-title">🏆 Niveluri de <span>joc</span></div>
+            <div class="tiers-grid">
+                <div class="tier-card tier-bronze">
+                    <div class="tier-badge">🥉 Bronze</div>
+                    <div class="tier-range">ELO: 800 — 1000</div>
+                </div>
+                <div class="tier-card tier-silver">
+                    <div class="tier-badge">🥈 Silver</div>
+                    <div class="tier-range">ELO: 1000 — 1200</div>
+                </div>
+                <div class="tier-card tier-gold">
+                    <div class="tier-badge">🥇 Gold</div>
+                    <div class="tier-range">ELO: 1200 — 1400</div>
+                </div>
+                <div class="tier-card tier-platinum">
+                    <div class="tier-badge">💎 Platinum</div>
+                    <div class="tier-range">ELO: 1400 — 1600</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Age Categories -->
+        <div class="ages-section">
+            <div class="section-title">👦 Categorii de <span>vârstă</span></div>
+            <div class="ages-row">
+                <div class="age-card">
+                    <div class="age-icon">🧒</div>
+                    <div class="age-title">5 — 7 ani</div>
+                    <div class="age-desc">Primii pași în fotbal, meciuri scurte și distractive</div>
+                </div>
+                <div class="age-card">
+                    <div class="age-icon">👦</div>
+                    <div class="age-title">7 — 12 ani</div>
+                    <div class="age-desc">Juniori cu pasiune, meciuri competitive pe echipe</div>
+                </div>
+                <div class="age-card">
+                    <div class="age-icon">🧑</div>
+                    <div class="age-title">Adulți</div>
+                    <div class="age-desc">Meciuri serioase cu sistem ELO complet</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Testimonial -->
+        <div class="testimonial">
+            <div class="testimonial-quote">„Am găsit meci în 5 minute, echipele au fost super echilibrate. Cea mai tare platformă pentru fotbal amator!"</div>
+            <div class="testimonial-author">— Andrei, jucător din București</div>
+        </div>
+
+        <!-- Back Footer -->
+        <div class="back-footer">
+            <div class="back-footer-logo">THE TACTICAL <span>MATCH-MAKER</span></div>
+            <div class="back-footer-url">🌐 tactical-match-maker.onrender.com</div>
+            <div class="back-footer-badges">
+                <span class="back-badge">✅ Gratuit</span>
+                <span class="back-badge">🔒 Plăți securizate Stripe</span>
+                <span class="back-badge">📱 Funcționează pe telefon</span>
+                <span class="back-badge">🇷🇴 Orice oraș</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

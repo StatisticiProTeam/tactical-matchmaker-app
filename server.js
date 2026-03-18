@@ -325,6 +325,52 @@ function getBaseUrl(req) {
     return `${proto}://${req.headers.host}`;
 }
 
+// Stats endpoint — see registered users, matches, payments
+app.get('/api/stats', (req, res) => {
+    const players = ServerData.getPlayers();
+    const matches = ServerData.getMatches();
+    const payments = ServerData.getPayments();
+
+    // Players by city
+    const byCity = {};
+    players.forEach(p => {
+        byCity[p.city] = (byCity[p.city] || 0) + 1;
+    });
+
+    // Players by day (registration chart)
+    const byDay = {};
+    players.forEach(p => {
+        const day = (p.createdAt || '').slice(0, 10);
+        if (day) byDay[day] = (byDay[day] || 0) + 1;
+    });
+
+    // Match stats
+    const openMatches = matches.filter(m => m.status === 'open').length;
+    const fullMatches = matches.filter(m => m.status === 'full').length;
+    const completedMatches = matches.filter(m => m.status === 'completed').length;
+
+    // Payment stats
+    const totalRevenue = payments
+        .filter(p => p.status === 'paid')
+        .reduce((sum, p) => sum + (p.amount || 0), 0);
+
+    res.json({
+        totalPlayers: players.length,
+        totalMatches: matches.length,
+        openMatches,
+        fullMatches,
+        completedMatches,
+        totalPayments: payments.length,
+        totalRevenue,
+        playersByCity: byCity,
+        playersByDay: byDay,
+        recentPlayers: players
+            .sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''))
+            .slice(0, 10)
+            .map(p => ({ name: p.name, city: p.city, elo: p.elo, createdAt: p.createdAt })),
+    });
+});
+
 // Fallback — serve index.html for any other route
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
