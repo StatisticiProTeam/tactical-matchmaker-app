@@ -190,13 +190,6 @@ async function notifyWelcome(player) {
         </div>
 
         <p style="color:#94a3b8;margin-bottom:20px;">Acum poți să te înscrii la meciuri din orașul tău și să primești notificări când apar meciuri noi!</p>
-
-        <div style="text-align:center;">
-            <a href="https://tactical-matchmaker-app.onrender.com/#matches" 
-               style="display:inline-block;padding:14px 32px;background:linear-gradient(135deg,#22c55e,#16a34a);color:white;text-decoration:none;border-radius:10px;font-weight:700;font-size:16px;">
-                ⚽ Găsește Meciuri
-            </a>
-        </div>
     `;
 
     await sendEmail(player.email, `Bine ai venit, ${player.name}! ⚽`, content);
