@@ -1461,3 +1461,259 @@ a:hover { color: var(--green-500); }
 .gap-sm { gap: var(--space-sm); }
 .gap-md { gap: var(--space-md); }
 .gap-lg { gap: var(--space-lg); }
+
+/* ============================================
+   MOBILE RESPONSIVE
+   ============================================ */
+
+/* Tablet and below */
+@media (max-width: 768px) {
+  html {
+    font-size: 15px;
+  }
+
+  h1 { font-size: 1.5rem; }
+  h2 { font-size: 1.3rem; }
+  h3 { font-size: 1.1rem; }
+
+  /* Navbar */
+  .navbar-inner {
+    padding: 0 var(--space-sm);
+    gap: var(--space-sm);
+  }
+
+  .navbar-brand span {
+    font-size: 1rem;
+  }
+
+  .navbar-user {
+    gap: var(--space-xs, 4px);
+  }
+
+  .navbar-user .btn {
+    font-size: 0.75rem;
+    padding: 6px 10px;
+  }
+
+  /* Container */
+  .container {
+    padding: 0 var(--space-md);
+  }
+
+  .page-content {
+    padding-top: var(--space-md);
+    padding-bottom: var(--space-xl);
+  }
+
+  /* Modal — full width on mobile */
+  .modal-overlay {
+    padding: var(--space-sm);
+    align-items: flex-start;
+    padding-top: env(safe-area-inset-top, 10px);
+  }
+
+  .modal-overlay .modal,
+  .modal-overlay > div > div {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 90vh;
+    overflow-y: auto;
+    margin: 0;
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+  }
+
+  /* Forms */
+  .form-input, .form-select {
+    font-size: 16px !important; /* Prevents iOS zoom */
+    padding: 12px 14px;
+  }
+
+  .form-label {
+    font-size: 0.85rem;
+  }
+
+  /* Match cards */
+  .matches-grid {
+    grid-template-columns: 1fr !important;
+    gap: var(--space-md);
+  }
+
+  .match-card {
+    padding: var(--space-md);
+  }
+
+  .match-header {
+    flex-direction: column;
+    gap: var(--space-sm);
+    align-items: flex-start;
+  }
+
+  .match-details {
+    flex-wrap: wrap;
+    gap: var(--space-xs, 4px);
+  }
+
+  .match-footer {
+    flex-direction: column;
+    gap: var(--space-sm);
+    align-items: stretch;
+  }
+
+  .match-footer .btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Matches header */
+  .matches-header {
+    flex-direction: column;
+    gap: var(--space-md);
+    align-items: flex-start;
+  }
+
+  /* Filters */
+  .matches-filters {
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .matches-filters .form-select {
+    width: 100% !important;
+    min-width: unset !important;
+  }
+
+  /* Tabs */
+  .tabs {
+    flex-wrap: wrap;
+    gap: var(--space-xs, 4px);
+  }
+
+  .tab-btn {
+    font-size: 0.8rem;
+    padding: 8px 12px;
+    flex: 1;
+    min-width: fit-content;
+  }
+
+  /* Profile */
+  .profile-header {
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .profile-stats-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: var(--space-sm);
+  }
+
+  .profile-stats-grid .stat-card {
+    padding: var(--space-sm);
+  }
+
+  .profile-stats-grid .stat-value {
+    font-size: 1.2rem;
+  }
+
+  /* Player card */
+  .player-card {
+    transform: scale(0.85);
+    transform-origin: top left;
+  }
+
+  /* Landing hero */
+  .hero-section {
+    padding: var(--space-xl) var(--space-md);
+    text-align: center;
+  }
+
+  .hero-section h1 {
+    font-size: 1.8rem;
+  }
+
+  .hero-section p {
+    font-size: 0.95rem;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .hero-buttons .btn {
+    width: 100%;
+  }
+
+  /* Features grid */
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  /* Team grids in match cards */
+  [style*="grid-template-columns: 1fr 1fr"] {
+    gap: var(--space-xs, 4px) !important;
+  }
+
+  /* Registration form */
+  .register-form,
+  .register-container {
+    padding: var(--space-md);
+  }
+
+  /* History items */
+  .history-item {
+    flex-direction: column;
+    gap: var(--space-sm);
+    align-items: flex-start;
+  }
+
+  /* Password grid in edit modal */
+  [style*="grid-template-columns:1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Fee confirmation */
+  .fee-confirmation-box {
+    padding: var(--space-md);
+  }
+
+  /* Radar chart */
+  .radar-chart {
+    max-width: 150px;
+    height: auto;
+  }
+}
+
+/* Phone small screens */
+@media (max-width: 380px) {
+  html {
+    font-size: 14px;
+  }
+
+  .navbar-brand span {
+    font-size: 0.85rem;
+  }
+
+  .navbar-user .btn {
+    font-size: 0.7rem;
+    padding: 5px 8px;
+  }
+
+  .profile-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  h1 { font-size: 1.3rem; }
+}
+
+/* Safe area for PWA (notch phones) */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .navbar {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
