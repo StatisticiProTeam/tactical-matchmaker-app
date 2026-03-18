@@ -34,12 +34,12 @@ const LandingPage = {
             <img src="img/promo-banner.png" alt="Provocare: 100 de jucători" style="width:100%;display:block;">
             <div style="background:rgba(10,14,23,0.95);padding:var(--space-lg) var(--space-xl);text-align:center;">
               <div style="max-width:400px;margin:0 auto var(--space-sm);">
-                <div style="height:10px;border-radius:5px;background:rgba(255,255,255,0.08);overflow:hidden;">
-                  <div id="promo-progress-bar" style="height:100%;border-radius:5px;background:linear-gradient(90deg,#22c55e,#10b981);transition:width 1.5s ease;width:0%;"></div>
+                <div style="height:20px;border-radius:10px;background:rgba(255,255,255,0.08);overflow:hidden;">
+                  <div id="promo-progress-bar" style="height:100%;border-radius:10px;background:linear-gradient(90deg,#22c55e,#10b981);transition:width 1.5s ease;width:0%;"></div>
                 </div>
               </div>
-              <p style="font-size:0.9rem;color:var(--text-muted);margin:var(--space-sm) 0 0;">
-                <strong id="promo-count" style="color:var(--green-400);font-size:1.1rem;">...</strong> / 100 jucători înregistrați
+              <p style="font-size:1.05rem;color:var(--text-muted);margin:var(--space-md) 0 0;">
+                <strong id="promo-count" style="color:var(--green-400);font-size:1.3rem;">...</strong> / 100 jucători înregistrați
               </p>
             </div>
           </div>
