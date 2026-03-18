@@ -29,9 +29,19 @@ const LandingPage = {
 
         <!-- 🏆 Promo Banner: 100 Players Challenge -->
         <section class="container" style="margin-top:var(--space-xl);">
-          <div class="animate-in" style="cursor:pointer;border-radius:var(--radius-xl);overflow:hidden;border:1px solid rgba(34,197,94,0.25);"
+          <div class="animate-in" style="border-radius:var(--radius-xl);overflow:hidden;border:1px solid rgba(34,197,94,0.25);${!currentUser ? 'cursor:pointer;' : ''}"
                ${!currentUser ? `onclick="App.navigate('register')"` : ''}>
-            <img src="img/promo-banner.png" alt="Provocare: 100 de jucători" style="width:100%;display:block;border-radius:var(--radius-xl);">
+            <img src="img/promo-banner.png" alt="Provocare: 100 de jucători" style="width:100%;display:block;">
+            <div style="background:rgba(10,14,23,0.95);padding:var(--space-lg) var(--space-xl);text-align:center;">
+              <div style="max-width:400px;margin:0 auto var(--space-sm);">
+                <div style="height:10px;border-radius:5px;background:rgba(255,255,255,0.08);overflow:hidden;">
+                  <div id="promo-progress-bar" style="height:100%;border-radius:5px;background:linear-gradient(90deg,#22c55e,#10b981);transition:width 1.5s ease;width:0%;"></div>
+                </div>
+              </div>
+              <p style="font-size:0.9rem;color:var(--text-muted);margin:var(--space-sm) 0 0;">
+                <strong id="promo-count" style="color:var(--green-400);font-size:1.1rem;">...</strong> / 100 jucători înregistrați
+              </p>
+            </div>
           </div>
         </section>
 
