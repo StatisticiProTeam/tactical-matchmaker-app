@@ -28,11 +28,20 @@ const App = {
             ]);
             if (matchesResp.ok) {
                 const matches = await matchesResp.json();
-                DataStore._set(DataStore.KEYS.MATCHES, matches);
+                if (matches.length > 0) {
+                    DataStore._set(DataStore.KEYS.MATCHES, matches);
+                }
             }
             if (playersResp.ok) {
-                const players = await playersResp.json();
-                DataStore._set(DataStore.KEYS.PLAYERS, players);
+                const serverPlayers = await playersResp.json();
+                // Merge: keep local players that aren't on server (avoid data loss on server restart)
+                const localPlayers = DataStore.getPlayers();
+                if (serverPlayers.length > 0) {
+                    const serverIds = new Set(serverPlayers.map(p => p.id));
+                    const localOnly = localPlayers.filter(p => !serverIds.has(p.id));
+                    DataStore._set(DataStore.KEYS.PLAYERS, [...serverPlayers, ...localOnly]);
+                }
+                // If server returned empty, keep local data as-is
             }
         } catch (e) {
             console.warn('Server sync failed, using local data:', e.message);
