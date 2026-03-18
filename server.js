@@ -47,6 +47,18 @@ app.use(express.static(path.join(__dirname)));
     }
 })();
 
+// Clean up test matches
+(() => {
+    const matches = ServerData.getMatches();
+    const real = matches.filter(m => m.title.toLowerCase() !== 'test');
+    if (real.length < matches.length) {
+        const fs = require('fs');
+        const path = require('path');
+        fs.writeFileSync(path.join(__dirname, 'data', 'matches.json'), JSON.stringify(real, null, 2));
+        console.log(`   🗑️ ${matches.length - real.length} meciuri de test șterse`);
+    }
+})();
+
 // ---- API Routes ----
 
 // Get public Stripe key (for frontend)
