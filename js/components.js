@@ -165,16 +165,7 @@ const Components = {
           <div class="elo-range">ELO: ${match.eloMin} — ${match.eloMax}
             ${remaining > 0 ? `<span style="color:var(--green-400);margin-left:8px;">${remaining} locuri libere</span>` : ''}
           </div>
-          ${(() => {
-            const cu = DataStore.getCurrentUser();
-            const isInMatch = cu && match.players && match.players.includes(cu.id);
-            if (match.status === 'open' && isInMatch) {
-              return `<button class="btn btn-sm" style="background:var(--red-500);color:white;" onclick="App.leaveMatch('${match.id}')">🚪 Ieși din Meci</button>`;
-            } else if (match.status === 'open') {
-              return `<button class="btn btn-primary btn-sm" onclick="App.joinMatch('${match.id}')">Intră în Meci</button>`;
-            }
-            return '';
-          })()}
+          ${match.status === 'open' ? `<button class="btn btn-primary btn-sm" onclick="App.joinMatch('${match.id}')">Intră în Meci</button>` : ''}
           ${match.status === 'completed' ? `<button class="btn btn-secondary btn-sm" onclick="App.navigate('rate', '${match.id}')">Notează Jucătorii</button>` : ''}
         </div>
       </div>

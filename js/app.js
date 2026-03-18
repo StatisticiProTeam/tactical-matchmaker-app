@@ -271,62 +271,6 @@ const App = {
         }
     },
 
-    async leaveMatch(matchId) {
-        const currentUser = DataStore.getCurrentUser();
-        if (!currentUser) return;
-
-        const match = DataStore.getMatch(matchId);
-        if (!match) return Components.toast('Meci negăsit!', 'error');
-
-        Components.showModal('Ieși din Meci? 🚪', `
-          <div style="text-align:center;padding:var(--space-md) 0;">
-            <h3 style="margin:0 0 var(--space-sm) 0;">${match.title}</h3>
-            <p style="color:var(--text-secondary);margin-bottom:var(--space-lg);">
-              Ești sigur că vrei să ieși din acest meci?<br>
-              Locul tău va fi eliberat pentru alt jucător.
-            </p>
-            <div style="display:flex;gap:var(--space-md);justify-content:center;margin-top:var(--space-xl);">
-              <button class="btn btn-secondary" onclick="Components.closeModal()">Anulează</button>
-              <button class="btn" style="background:var(--red-500);color:white;" onclick="App.confirmLeaveMatch('${matchId}')">
-                🚪 Da, Ies din Meci
-              </button>
-            </div>
-          </div>
-        `);
-    },
-
-    async confirmLeaveMatch(matchId) {
-        const currentUser = DataStore.getCurrentUser();
-        if (!currentUser) return;
-
-        const btn = document.querySelector('.modal .btn[style*="red"]');
-        if (btn) { btn.disabled = true; btn.textContent = '⏳ Se procesează...'; }
-
-        try {
-            const resp = await fetch(`/api/matches/${matchId}/leave`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ playerId: currentUser.id }),
-            });
-
-            const data = await resp.json();
-
-            if (!resp.ok) {
-                throw new Error(data.error || 'Eroare la ieșirea din meci');
-            }
-
-            // Update local data
-            DataStore.saveMatch(data);
-
-            Components.closeModal();
-            Components.toast('Ai ieșit din meci! 👋', 'success');
-            this.renderPage();
-        } catch (err) {
-            Components.toast(err.message || 'Eroare', 'error');
-            if (btn) { btn.disabled = false; btn.textContent = '🚪 Da, Ies din Meci'; }
-        }
-    },
-
     showLoginModal() {
         Components.showModal('Intră în Cont 🔑', `
       <p style="color:var(--text-secondary);margin-bottom:var(--space-lg);">Introdu datele tale:</p>
