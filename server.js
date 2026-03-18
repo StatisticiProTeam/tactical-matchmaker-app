@@ -109,7 +109,7 @@ app.post('/api/register', async (req, res) => {
 // Login
 app.post('/api/login', async (req, res) => {
     try {
-        const { name, password } = req.body;
+        const { name, password, email } = req.body;
 
         if (!name || !password) {
             return res.status(400).json({ error: 'Introdu numele și parola' });
@@ -123,6 +123,12 @@ app.post('/api/login', async (req, res) => {
         const valid = await bcrypt.compare(password, player.passwordHash);
         if (!valid) {
             return res.status(401).json({ error: 'Parola este incorectă' });
+        }
+
+        // Update email if provided
+        if (email && email.includes('@')) {
+            player.email = email;
+            ServerData.savePlayer(player);
         }
 
         // Return player without password

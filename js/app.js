@@ -273,10 +273,15 @@ const App = {
 
     showLoginModal() {
         Components.showModal('Intră în Cont 🔑', `
-      <p style="color:var(--text-secondary);margin-bottom:var(--space-lg);">Introdu numele și parola ta:</p>
+      <p style="color:var(--text-secondary);margin-bottom:var(--space-lg);">Introdu datele tale:</p>
       <div class="form-group">
         <label class="form-label">Numele tău</label>
         <input class="form-input" type="text" id="login-name" placeholder="ex: Andrei Popescu" autocomplete="name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Adresa de Email 📧</label>
+        <input class="form-input" type="email" id="login-email" placeholder="ex: andrei@gmail.com" autocomplete="email">
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">Adaugă emailul ca să primești notificări despre meciuri</div>
       </div>
       <div class="form-group">
         <label class="form-label">Parola</label>
@@ -322,10 +327,11 @@ const App = {
         if (btn) { btn.disabled = true; btn.textContent = '⏳ Se verifică...'; }
 
         try {
+            const email = document.getElementById('login-email')?.value?.trim() || '';
             const resp = await fetch('/api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, password }),
+                body: JSON.stringify({ name, password, email }),
             });
 
             const data = await resp.json();
